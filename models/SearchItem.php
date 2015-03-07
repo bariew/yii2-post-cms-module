@@ -20,6 +20,11 @@ use bariew\postModule\models\Item;
  */
 class SearchItem extends Item
 {
+    public static function tableName() 
+    {
+        $class = str_replace('SearchItem', 'Item', get_called_class());
+        return $class::tableName();
+    }
     /**
      * @inheritdoc
      */
