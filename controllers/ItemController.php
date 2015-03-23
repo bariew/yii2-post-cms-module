@@ -7,6 +7,11 @@
 
 namespace bariew\postModule\controllers;
 
+use bariew\postModule\actions\CreateAction;
+use bariew\postModule\actions\DeleteAction;
+use bariew\postModule\actions\IndexAction;
+use bariew\postModule\actions\UpdateAction;
+use bariew\postModule\actions\ViewAction;
 use Yii;
 use bariew\postModule\models\Item;
 use bariew\postModule\models\SearchItem;
@@ -65,8 +70,22 @@ class ItemController extends Controller
      */
     public function actions() 
     {
-       // echo $this->storagePath();exit;
         return [
+            'index' => [
+                'class' => IndexAction::className(),
+            ],
+            'view' => [
+                'class' => ViewAction::className(),
+            ],
+            'update' => [
+                'class' => UpdateAction::className(),
+            ],
+            'create' => [
+                'class' => CreateAction::className(),
+            ],
+            'delete' => [
+                'class' => DeleteAction::className(),
+            ],
             // Imperavi files
             'file-upload'    => [
                 'class'         => 'yii\imperavi\actions\FileUpload',
@@ -92,81 +111,6 @@ class ItemController extends Controller
             ]
         ];
     }
-    
-    /**
-     * Lists all Item models.
-     * @return mixed
-     */
-    public function actionIndex()
-    {
-        $searchModel = $this->findModel(null, true);
-        $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
-
-        return $this->render('index', [
-            'searchModel' => $searchModel,
-            'dataProvider' => $dataProvider,
-        ]);
-    }
-
-    /**
-     * Displays a single Item model.
-     * @param integer $id
-     * @return mixed
-     */
-    public function actionView($id)
-    {
-        return $this->render('view', [
-            'model' => $this->findModel($id),
-        ]);
-    }
-
-    /**
-     * Creates a new Item model.
-     * If creation is successful, the browser will be redirected to the 'view' page.
-     * @return mixed
-     */
-    public function actionCreate()
-    {
-        $model = $this->findModel(null);
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->id]);
-        } else {
-            return $this->render('create', [
-                'model' => $model,
-            ]);
-        }
-    }
-
-    /**
-     * Updates an existing Item model.
-     * If update is successful, the browser will be redirected to the 'view' page.
-     * @param integer $id
-     * @return mixed
-     */
-    public function actionUpdate($id)
-    {
-        $model = $this->findModel($id);
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->id]);
-        } else {
-            return $this->render('update', [
-                'model' => $model,
-            ]);
-        }
-    }
-
-    /**
-     * Deletes an existing Item model.
-     * If deletion is successful, the browser will be redirected to the 'index' page.
-     * @param integer $id
-     * @return mixed
-     */
-    public function actionDelete($id)
-    {
-        $this->findModel($id)->delete();
-
-        return $this->redirect(['index']);
-    }
 
     /**
      * Finds the Item model based on its primary key value.
@@ -176,7 +120,7 @@ class ItemController extends Controller
      * @return Item|SearchItem the loaded model
      * @throws NotFoundHttpException if the model cannot be found
      */
-    protected function findModel($condition, $search = false)
+    public function findModel($condition, $search = false)
     {
         $class = preg_replace('/^(.*)(controllers).*$/', '$1models', get_class($this))
             . '\\'. ($search ? 'SearchItem' : 'Item');
