@@ -106,7 +106,7 @@ class Item extends ActiveRecord
     {
         $moduleName = preg_match('/.*\\\\(\w+)\\\\models\\\\\w+$/', get_class($this), $matches)
             ? $matches[1] : 'post';
-        $user_id = $this->user_id ? : Yii::$app->user->id;
+        $user_id = $this->getAttribute('user_id') ? : Yii::$app->user->id;
         return "@app/web/files/{$user_id}/{$moduleName}/"
             . $this->formName() . '/' . $this->id; 
     }
