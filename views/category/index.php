@@ -2,6 +2,7 @@
 
 use yii\helpers\Html;
 use yii\grid\GridView;
+use bariew\postModule\models\Category;
 
 /* @var $this yii\web\View */
 /* @var $searchModel bariew\postModule\models\SearchCategory */
@@ -18,6 +19,8 @@ $this->params['breadcrumbs'][] = $this->title;
     <p>
         <?= Html::a(Yii::t('modules/post', 'Create Category'), ['create'], ['class' => 'btn btn-success']) ?>
     </p>
+
+    <?= \bariew\postModule\widgets\CategoryMenu::widget() ?>
 
     <?= GridView::widget([
         'dataProvider' => $dataProvider,

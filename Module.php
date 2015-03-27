@@ -9,11 +9,15 @@ class Module extends \yii\base\Module
             'label'    => 'Post',
             'items' => [
                 [
-                    'label'    => 'Admin',
+                    'label'    => 'Admin posts',
                     'url' => ['/post/item/index']
                 ],
                 [
-                    'label'    => 'My post',
+                    'label'    => 'Admin categories',
+                    'url' => ['/post/category/index']
+                ],
+                [
+                    'label'    => 'My posts',
                     'url' => ['/post/user-item/index']
                 ],
             ]
