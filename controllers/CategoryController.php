@@ -14,6 +14,8 @@ use yii\filters\VerbFilter;
  */
 class CategoryController extends Controller
 {
+    public $layout = 'menu';
+    
     public function behaviors()
     {
         return [
@@ -32,7 +34,7 @@ class CategoryController extends Controller
      */
     public function actionIndex()
     {
-        $searchModel = new SearchCategory();
+        $searchModel = $this->findModel(null, true);
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
         return $this->render('index', [
@@ -58,11 +60,11 @@ class CategoryController extends Controller
      * If creation is successful, the browser will be redirected to the 'view' page.
      * @return mixed
      */
-    public function actionCreate()
+    public function actionCreate($id)
     {
-        $model = new Category();
-        $root = Category::findOne(1);
-        if ($model->load(Yii::$app->request->post()) && $model->prependTo($root)) {
+        $model = $this->findModel(null);
+        $root = $this->findModel($id);
+        if ($model->load(Yii::$app->request->post()) && $model->appendTo($root)) {
             return $this->redirect(['view', 'id' => $model->id]);
         } else {
             return $this->render('create', [
@@ -98,24 +100,54 @@ class CategoryController extends Controller
      */
     public function actionDelete($id)
     {
-        $this->findModel($id)->delete();
+        $this->findModel($id)->deleteWithChildren();
 
         return $this->redirect(['index']);
     }
-
+    
+    public function actionTreeMove($id)
+    {
+        $child = $this->findModel($id);
+        $parent = $this->findModel(\Yii::$app->request->post('pid'));
+        $position = \Yii::$app->request->post('position');
+        if ((!$children = $parent->children()->all()) || ($position == 0)) {
+            $child->prependTo($parent);
+        } else if(count($children) <= $position) {
+            $child->insertAfter(end($children));
+        } else {
+            $child->insertAfter($children[$position-1]);
+        }
+    }
+    
+    public function actionTreeUpdate($id)
+    {
+        $model = $this->findModel($id);
+        $attributes = [
+            'name' => \Yii::$app->request->post('attributes')['title']
+        ];
+        if ($model->load($attributes, '') && $model->save()) {
+            return true;
+        }
+        throw new \yii\web\BadRequestHttpException();
+    }
+    
     /**
-     * Finds the Category model based on its primary key value.
+     * Finds the Item model based on its primary key value.
      * If the model is not found, a 404 HTTP exception will be thrown.
-     * @param integer $id
-     * @return Category the loaded model
+     * @param integer|array|null $condition
+     * @param boolean $search
+     * @return Category|SearchCategory the loaded model
      * @throws NotFoundHttpException if the model cannot be found
      */
-    protected function findModel($id)
+    public function findModel($condition, $search = false)
     {
-        if (($model = Category::findOne($id)) !== null) {
-            return $model;
-        } else {
+        $class = preg_replace('/^(.*)(controllers).*$/', '$1models', get_class($this))
+            . '\\'. ($search ? 'SearchCategory' : 'Category');
+        if (!$condition) {
+            $model = new $class();
+        } else if (!$model = $class::findOne($condition)) {
             throw new NotFoundHttpException('The requested page does not exist.');
         }
+        return $model;
     }
 }

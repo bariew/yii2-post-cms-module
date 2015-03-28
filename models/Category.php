@@ -48,7 +48,7 @@ class Category extends \yii\db\ActiveRecord
     {
         return [
             [['content'], 'string'],
-            [['lft', 'rgt', 'depth', 'is_active'], 'integer'],
+            [['is_active'], 'integer'],
             [['title', 'name'], 'string', 'max' => 255]
         ];
     }
@@ -95,5 +95,15 @@ class Category extends \yii\db\ActiveRecord
     public static function find()
     {
         return new NestedQuery(get_called_class());
+    }
+    
+    public function beforeDelete() 
+    {
+        if ($this->depth == 0) {
+            throw new \BadMethodCallException(
+                \Yii::t('modules/post', "Root category can not be deleted.")
+            );
+        }
+        return parent::beforeDelete();
     }
 }

@@ -23,4 +23,11 @@ class Module extends \yii\base\Module
             ]
         ]
     ];
+    
+    public static function moduleName($object)
+    {
+        return preg_match('/modules\\\\(\w+)\\\\.*/', 
+                get_class($object), $matches)
+            ? $matches[1] : 'post';        
+    }
 }

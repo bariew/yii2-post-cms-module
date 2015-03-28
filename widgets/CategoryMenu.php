@@ -8,7 +8,7 @@
 
 namespace bariew\postModule\widgets;
 
-
+use bariew\postModule\Module;
 use bariew\nodeTree\ARTreeMenuWidget;
 use bariew\postModule\models\Category;
 use yii\base\Widget;
@@ -16,7 +16,6 @@ use yii\base\Widget;
 class CategoryMenu extends Widget
 {
     public static $uniqueKey = 0;
-    public $actionPath = '/post/category/update';
 
     public $view = 'nested';
 
@@ -31,6 +30,7 @@ class CategoryMenu extends Widget
 
     protected function generateItems()
     {
+        $moduleName = Module::moduleName($this);
         $items = Category::find()->orderBy(['lft' => SORT_ASC])->asArray()->all();;
         foreach ($items as &$item) {
             $uniqueKey = self::$uniqueKey++;
@@ -39,9 +39,10 @@ class CategoryMenu extends Widget
                 'id'    => $nodeId,
                 'text'  => $item['name'],
                 'type'  => 'folder',
+                'active'=> \Yii::$app->request->get('id') == $item['id'],
                 'a_attr'=> [
-                    'data-id'   => $nodeId,
-                    'href'    => [$this->actionPath, 'id' => $item['id']]
+                    'data-id' => $nodeId,
+                    'href'    => ["/{$moduleName}/category/update", 'id' => $item['id']]
                 ]
             ];
         }

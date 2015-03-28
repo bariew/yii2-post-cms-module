@@ -104,8 +104,7 @@ class Item extends ActiveRecord
      */
     public function getStoragePath()
     {
-        $moduleName = preg_match('/.*\\\\(\w+)\\\\models\\\\\w+$/', get_class($this), $matches)
-            ? $matches[1] : 'post';
+        $moduleName = \bariew\postModule\Module::moduleName($this);
         $user_id = $this->getAttribute('user_id') ? : Yii::$app->user->id;
         return "@app/web/files/{$user_id}/{$moduleName}/"
             . $this->formName() . '/' . $this->id; 
