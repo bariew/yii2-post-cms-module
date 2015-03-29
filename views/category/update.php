@@ -16,7 +16,7 @@ $this->params['breadcrumbs'][] = Yii::t('modules/post', 'Update');
 
     <h1><?= Html::encode($this->title) ?></h1>
 
-    <?= $this->render('_form', [
+    <?= $this->render('form', [
         'model' => $model,
     ]) ?>
 

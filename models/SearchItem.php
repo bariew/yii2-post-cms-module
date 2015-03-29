@@ -20,6 +20,8 @@ use bariew\postModule\models\Item;
  */
 class SearchItem extends Item
 {
+    public $category_id;
+    
     public static function tableName() 
     {
         $class = str_replace('SearchItem', 'Item', get_called_class());
@@ -33,7 +35,8 @@ class SearchItem extends Item
         return [
             [['id', 'is_active'], 'integer'],
             [['title', 'brief', 'content', 'image', 'created_at'], 'safe'],
-            [['user_id'], 'integer', 'on' => self::SCENARIO_ADMIN]
+            [['user_id'], 'integer', 'on' => self::SCENARIO_ADMIN],
+            [['category_id'], 'safe']
         ];
     }
 
@@ -62,6 +65,7 @@ class SearchItem extends Item
         if (!$this->validate()) {
             return $dataProvider;
         }
+        //print_r($this->attributes);exit;
 
         $query->andFilterWhere([
             'id' => $this->id,
@@ -77,6 +81,12 @@ class SearchItem extends Item
                 'like', 'DATE_FORMAT(FROM_UNIXTIME(created_at), "%Y-%m-%d")', $this->created_at
             ])
             ;
+        if ($this->category_id) {
+            $t = $this->tableName();
+            $relation = \bariew\postModule\Module::getModel($this, 'CategoryToItem')->tableName();
+            $query->innerJoin($relation, "$relation.item_id = $t.id")
+                ->andWhere(["$relation.category_id" => $this->category_id]);
+        }
 
         return $dataProvider;
     }

@@ -30,4 +30,15 @@ class Module extends \yii\base\Module
                 get_class($object), $matches)
             ? $matches[1] : 'post';        
     }
+    
+    /**
+     * 
+     * @param type $formName
+     * @return ActiveRecord $model
+     */
+    public static function getModel($model, $formName)
+    {
+        $class = preg_replace('/(.*\\\\)\w+$/', '$1'.$formName, get_class($model));
+        return new $class();
+    }
 }

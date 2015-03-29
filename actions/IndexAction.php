@@ -32,9 +32,9 @@ class IndexAction extends Action
          */
         $searchModel = $this->controller->findModel(null, true);
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
-        return $this->controller->render('index', [
-            'searchModel' => $searchModel,
-            'dataProvider' => $dataProvider,
-        ]);
+        
+        return Yii::$app->request->isAjax
+            ? $this->controller->renderPartial('index-ajax', compact('searchModel', 'dataProvider'))
+            : $this->controller->render('index', compact('searchModel', 'dataProvider'));
     }
 }
