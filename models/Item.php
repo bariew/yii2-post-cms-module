@@ -10,7 +10,7 @@ namespace bariew\postModule\models;
 use Yii;
 use \yii\db\ActiveRecord;
 use \bariew\yii2Tools\behaviors\FileBehavior;
-
+use bariew\postModule\components\CategoryToItemBehavior;
 /**
  * Description.
  *
@@ -56,6 +56,7 @@ class Item extends ActiveRecord
             [['brief', 'content'], 'string'],
             [['title'], 'string', 'max' => 255],
             ['image', 'image', 'maxFiles' => 10],
+            [['categoryIds'], 'safe'],
             ['user_id', 'integer', 'on' => self::SCENARIO_ADMIN],
         ];
     }
@@ -76,6 +77,9 @@ class Item extends ActiveRecord
                     'thumb2' => ['method' => 'thumbnail', 'width' => 100, 'height' => 100],
                     'thumb3' => ['method' => 'thumbnail', 'width' => 200, 'height' => 200],
                 ]
+            ],
+            'categoryToItem' => [
+                'class' => CategoryToItemBehavior::className()
             ]
         ];
     }
@@ -95,6 +99,7 @@ class Item extends ActiveRecord
             'created_at' => Yii::t('modules/post', 'Created At'),
             'updated_at' => Yii::t('modules/post', 'Updated At'),
             'image' => Yii::t('modules/post', 'Image'),
+            'categoryIds' => Yii::t('modules/post', 'Category list'),
         ];
     }
     

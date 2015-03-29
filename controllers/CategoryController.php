@@ -82,7 +82,6 @@ class CategoryController extends Controller
     public function actionUpdate($id)
     {
         $model = $this->findModel($id);
-
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             return $this->redirect(['view', 'id' => $model->id]);
         } else {
@@ -110,12 +109,12 @@ class CategoryController extends Controller
         $child = $this->findModel($id);
         $parent = $this->findModel(\Yii::$app->request->post('pid'));
         $position = \Yii::$app->request->post('position');
-        if ((!$children = $parent->children()->all()) || ($position == 0)) {
+        if ((!$leaves = $parent->leaves()->all()) || ($position == 0)) {
             $child->prependTo($parent);
-        } else if(count($children) <= $position) {
-            $child->insertAfter(end($children));
+        } else if(count($leaves) <= $position) {
+            $child->insertAfter(end($leaves));
         } else {
-            $child->insertAfter($children[$position-1]);
+            $child->insertAfter($leaves[$position-1]);
         }
     }
     

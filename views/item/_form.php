@@ -3,6 +3,7 @@
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
 use yii\helpers\Url;
+use kartik\widgets\Select2;
 /* @var $this yii\web\View */
 /* @var $model bariew\postModule\models\Item */
 /* @var $form yii\widgets\ActiveForm */
@@ -16,7 +17,14 @@ use yii\helpers\Url;
     <?= \bariew\postModule\widgets\ImageGallery::widget(['model' => $model, 'field' => 'thumb1']); ?>
     <?= $form->field($model, 'title')->textInput(['maxlength' => 255]) ?>
     <?= $form->field($model, 'user_id')->textInput(['maxlength' => 255]) ?>
-
+    <?= $form->field($model, 'categoryIds')->widget(Select2::className(), [
+        'data' => $model->allCategoryList(),
+        'options' => [
+            'placeholder' => Yii::t('modules/post', 'Select categories'),
+            'multiple' => true,
+            'class' => 'form-control',
+        ]
+    ]);?>
     <div class="form-group required">
         <?php echo yii\imperavi\Widget::widget([
             'model' => $model,
