@@ -33,6 +33,8 @@ use Yii;
  */
 class Category extends \yii\db\ActiveRecord
 {
+    public $items = [];
+
     /**
      * @inheritdoc
      */
@@ -105,5 +107,48 @@ class Category extends \yii\db\ActiveRecord
             );
         }
         return parent::beforeDelete();
+    }
+
+    public function updateChildren($attributes)
+    {
+        $childrenIds = $this->children()->select(['id'])->column();
+        return $this->updateAll($attributes, ['id' => $childrenIds]);
+    }
+
+    public static function activeItems($items)
+    {
+        $result = [];
+        $exclude = [];
+        foreach ($items as $k => $item) {
+            if (!$item['is_active']) {
+                $exclude[] = $item;
+                continue;
+            }
+            if (self::isChildOfArray($exclude, $item)) {
+                continue;
+            }
+            $result[$k] = $item;
+        }
+        return $result; // keys are kept!
+    }
+
+    public static function toTree($items)
+    {
+        foreach ($items as &$item) {
+            $childLfts = array_fill($item['lft'] + 1, $item['rgt'] - $item['lft'], 1);
+            $item['items'] = array_intersect_key($items, $childLfts);
+        }
+        return $items;
+    }
+
+    public static function isChildOfArray($parents, $child)
+    {
+        foreach ((array) $parents as $parent) {
+            if ($child['lft'] > $parent['lft']
+                && $child['rgt'] < $parent['rgt']) {
+                return true;
+            }
+        }
+        return false;
     }
 }
