@@ -134,11 +134,20 @@ class Category extends \yii\db\ActiveRecord
 
     public static function toTree($items)
     {
-        foreach ($items as &$item) {
-            $childLfts = array_fill($item['lft'] + 1, $item['rgt'] - $item['lft'], 1);
-            $item['items'] = array_intersect_key($items, $childLfts);
+        $result = [];
+        $parents = [];
+        foreach ($items as $item) {
+            $parents[$item['depth']][$item['lft']] = $item;
+            if (!isset($parents[$item['depth']-1])) {
+                $result[$item['lft']] = &$parents[$item['depth']][$item['lft']];
+                continue;
+            }
+            end($parents[$item['depth']-1]);
+            $key = key($parents[$item['depth']-1]);
+            $parents[$item['depth']-1][$key]['items'][$item['lft']]
+                = &$parents[$item['depth']][$item['lft']];
         }
-        return $items;
+        return $result;
     }
 
     public static function isChildOfArray($parents, $child)
