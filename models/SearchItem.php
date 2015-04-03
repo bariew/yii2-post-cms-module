@@ -10,7 +10,8 @@ namespace bariew\postModule\models;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
 use bariew\postModule\models\Item;
- 
+use yii\db\ActiveRecord;
+
 /**
  * Searches post items.
  * 
@@ -58,6 +59,9 @@ class SearchItem extends Item
      */
     public function search($params)
     {
+        /**
+         * @var ActiveRecord $class
+         */
         $class = str_replace('SearchItem', 'Item', get_class($this));
         $query = $class::find()->andFilterWhere(['user_id' => $this->user_id]);
         $dataProvider = new ActiveDataProvider(compact('query'));

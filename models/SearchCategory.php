@@ -6,6 +6,7 @@ use Yii;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
 use bariew\postModule\models\Category;
+use yii\db\ActiveRecord;
 
 /**
  * SearchCategory represents the model behind the search form about `bariew\postModule\models\Category`.
@@ -41,7 +42,11 @@ class SearchCategory extends Category
      */
     public function search($params)
     {
-        $query = Category::find();
+        /**
+         * @var ActiveRecord $class
+         */
+        $class = str_replace('SearchCategory', 'Category', get_class($this));
+        $query = $class::find();
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,

@@ -1,6 +1,7 @@
 <?php
 
 namespace bariew\postModule;
+use yii\db\ActiveRecord;
 
 class Module extends \yii\base\Module
 {
@@ -30,15 +31,28 @@ class Module extends \yii\base\Module
                 get_class($object), $matches)
             ? $matches[1] : 'post';        
     }
-    
+
     /**
-     * 
-     * @param type $formName
+     *
+     * @param $model
+     * @param string $formName
      * @return ActiveRecord $model
      */
     public static function getModel($model, $formName)
     {
-        $class = preg_replace('/(.*\\\\)\w+$/', '$1'.$formName, get_class($model));
+        $class = preg_replace('/(.*\\\\)\w+$/', '$1' . $formName, get_class($model));
+        return new $class();
+    }
+
+    /**
+     * @param $controller
+     * @param $formName
+     * @return ActiveRecord
+     */
+    public static function getControllerModel($controller, $formName)
+    {
+        $class = preg_replace('/^(.*)(controllers).*$/', '$1models', get_class($controller))
+            . '\\'. $formName;
         return new $class();
     }
 }

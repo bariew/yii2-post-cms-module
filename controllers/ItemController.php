@@ -12,6 +12,7 @@ use bariew\postModule\actions\DeleteAction;
 use bariew\postModule\actions\IndexAction;
 use bariew\postModule\actions\UpdateAction;
 use bariew\postModule\actions\ViewAction;
+use bariew\postModule\Module;
 use Yii;
 use bariew\postModule\models\Item;
 use bariew\postModule\models\SearchItem;
@@ -26,6 +27,9 @@ use yii\filters\VerbFilter;
  */
 class ItemController extends Controller
 {
+    public $searchModelName = 'SearchItem';
+    public $modelName = 'Item';
+
     /**
      * @var string model uploaded files storage path.
      */
@@ -122,15 +126,12 @@ class ItemController extends Controller
      */
     public function findModel($condition, $search = false)
     {
-        $class = preg_replace('/^(.*)(controllers).*$/', '$1models', get_class($this))
-            . '\\'. ($search ? 'SearchItem' : 'Item');
-       
-        if (!$condition) {
-            $model = new $class();
-        } else if (!$model = $class::findOne($condition)) {
+        $model = Module::getControllerModel($this,
+            ($search ? $this->searchModelName : $this->modelName));
+        if ($condition && (!$model = $model::findOne($condition))) {
             throw new NotFoundHttpException('The requested page does not exist.');
         }
-        $model->scenario = $class::SCENARIO_ADMIN;
+        $model->scenario = $model::SCENARIO_ADMIN;
         return $model;
     }
 }
