@@ -24,6 +24,7 @@ class CreateAction extends Action
 {
     public $view = 'create';
     public $redirectAction = 'view';
+    public $modelAttributes = [];
 
     /**
      * @inheritdoc
@@ -31,6 +32,9 @@ class CreateAction extends Action
     public function run()
     {
         $model = $this->controller->findModel(null);
+        foreach ($this->modelAttributes as $attribute => $value) {
+            $model->setAttribute($attribute, $value);
+        };
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             return $this->controller->redirect([$this->redirectAction, 'id' => $model->id]);
         } else {
