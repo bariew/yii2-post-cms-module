@@ -2,6 +2,7 @@
 
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
+use yii\helpers\Url;
 
 /* @var $this yii\web\View */
 /* @var $model bariew\postModule\models\Category */
@@ -19,8 +20,25 @@ use yii\widgets\ActiveForm;
 
     <?= $form->field($model, 'name')->textInput(['maxlength' => 255]) ?>
 
-    <?= $form->field($model, 'content')->textarea(['rows' => 6]) ?>
-
+    <div class="form-group required">
+        <?php echo yii\imperavi\Widget::widget([
+            'model' => $model,
+            'attribute' => 'content',
+            'options'   => [
+                'minHeight'                => 300,
+                'fileUpload'               => Url::toRoute(['file-upload', 'attr' => 'content', 'id' => $model->id]),
+                'imageUpload'              => Url::toRoute(['image-upload', 'attr' => 'content', 'id' => $model->id]),
+                'imageGetJson'             => Url::toRoute(['image-list', 'attr' => 'content', 'id' => $model->id]),
+                'imageUploadErrorCallback' => new \yii\web\JsExpression('function(json) { alert(json.error); }'),
+                'fileUploadErrorCallback'  => new \yii\web\JsExpression('function(json) { alert(json.error); }'),
+            ]
+        ]);?>
+        <?php if ($model->hasErrors('content')): ?>
+            <div class="has-error">
+                <?php echo \yii\helpers\Html::error($model, 'content', $form->field($model, 'content')->errorOptions); ?>
+            </div>
+        <?php endif; ?>
+    </div>
     <?= $form->field($model, 'is_active')->checkbox() ?>
 
     <div class="form-group">
