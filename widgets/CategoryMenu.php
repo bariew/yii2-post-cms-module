@@ -31,7 +31,10 @@ class CategoryMenu extends Widget
     protected function generateItems()
     {
         $moduleName = Module::moduleName($this);
-        $items = Category::find()->orderBy(['lft' => SORT_ASC])->asArray()->all();;
+
+        $model = Module::getModel($this, 'Category', ['widgets' => 'models']);
+
+        $items = $model::find()->orderBy(['lft' => SORT_ASC])->asArray()->all();;
         foreach ($items as &$item) {
             $uniqueKey = self::$uniqueKey++;
             $nodeId = $uniqueKey . '-id-' . $item['id'];

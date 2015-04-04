@@ -1,6 +1,6 @@
 <?php
 /**
- * UpdateAction class file.
+ * CreateAction class file.
  * @copyright (c) 2015, bariew
  * @license http://www.opensource.org/licenses/bsd-license.php
  */
@@ -20,9 +20,9 @@ use bariew\postModule\controllers\ItemController;
  *
  * @property ItemController $controller
  */
-class UpdateAction extends Action
+class TreeCreateAction extends Action
 {
-    public $view = 'update';
+    public $view = 'create';
     public $redirectAction = 'view';
 
     /**
@@ -30,11 +30,14 @@ class UpdateAction extends Action
      */
     public function run($id)
     {
-        $model = $this->controller->findModel($id);
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->controller->redirect([$this->redirectAction, 'id' => $model->id]);
+        $model = $this->controller->findModel(null);
+        $root = $this->controller->findModel($id);
+        if ($model->load(Yii::$app->request->post()) && $model->appendTo($root)) {
+            return $this->controller->redirect(['view', 'id' => $model->id]);
         } else {
-            return $this->controller->render($this->view, compact('model'));
+            return $this->controller->render('create', [
+                'model' => $model,
+            ]);
         }
     }
 }

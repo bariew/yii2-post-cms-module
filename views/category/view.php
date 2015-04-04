@@ -28,13 +28,15 @@ $this->params['breadcrumbs'][] = $this->title;
     <?= DetailView::widget([
         'model' => $model,
         'attributes' => [
+            [
+                'attribute' => 'image',
+                'format' => 'raw',
+                'value' => \bariew\postModule\widgets\ImageGallery::widget(['model' => $model, 'field' => 'thumb1'])
+            ],
             'id',
             'title',
             'name',
             'content:ntext',
-            'lft',
-            'rgt',
-            'depth',
             'is_active',
         ],
     ]) ?>

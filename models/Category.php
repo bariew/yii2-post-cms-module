@@ -3,8 +3,11 @@
 namespace bariew\postModule\models;
 
 use bariew\postModule\components\NestedQuery;
+use bariew\postModule\Module;
+use bariew\yii2Tools\behaviors\FileBehavior;
 use creocoder\nestedsets\NestedSetsBehavior;
 use Yii;
+use yii\db\ActiveQuery;
 
 /**
  * This is the model class for table "post_category".
@@ -17,6 +20,7 @@ use Yii;
  * @property integer $rgt
  * @property integer $depth
  * @property integer $is_active
+ * @property Item[] $items
  *
  * @method NestedSetsBehavior makeRoot()
  * @method NestedSetsBehavior prependTo()
@@ -30,6 +34,12 @@ use Yii;
  * @method NestedSetsBehavior next()
  * @method NestedSetsBehavior isRoot()
  * @method NestedSetsBehavior isLeaf()
+ *
+ * @method FileBehavior getRemoveLink
+ * @method FileBehavior getFileLink
+ * @method FileBehavior linkList
+ * @method FileBehavior deleteFile
+ * @method FileBehavior renameFile
  */
 class Category extends \yii\db\ActiveRecord
 {
@@ -51,7 +61,8 @@ class Category extends \yii\db\ActiveRecord
         return [
             [['content'], 'string'],
             [['is_active'], 'integer'],
-            [['title', 'name'], 'string', 'max' => 255]
+            [['title', 'name'], 'string', 'max' => 255],
+            ['image', 'image', 'maxFiles' => 10],
         ];
     }
 
@@ -69,6 +80,7 @@ class Category extends \yii\db\ActiveRecord
             'rgt' => Yii::t('modules/post', 'Rgt'),
             'depth' => Yii::t('modules/post', 'Depth'),
             'is_active' => Yii::t('modules/post', 'Is Active'),
+            'image' => Yii::t('modules/post', 'Image'),
         ];
     }
 
@@ -78,16 +90,37 @@ class Category extends \yii\db\ActiveRecord
     public function behaviors() {
         return [
             'tree' => ['class' => NestedSetsBehavior::className()],
+            'fileBehavior' => [
+                'class' => FileBehavior::className(),
+                'storage' => [$this, 'getStoragePath'],
+                'fileField' => 'image',
+                'imageSettings' => [
+                    'thumb1' => ['method' => 'thumbnail', 'width' => 50, 'height' => 50],
+                    'thumb2' => ['method' => 'thumbnail', 'width' => 100, 'height' => 100],
+                    'thumb3' => ['method' => 'thumbnail', 'width' => 200, 'height' => 200],
+                ]
+            ],
         ];
     }
 
+    /**
+     * is_active available value list.
+     * @return array
+     */
+    public static function activeList()
+    {
+        return [
+            0 => Yii::t('modules/post', 'No'),
+            1 => Yii::t('modules/post', 'Yes'),
+        ];
+    }
     /**
      * @return array
      */
     public function transactions()
     {
         return [
-            self::SCENARIO_DEFAULT => self::OP_ALL,
+            static::SCENARIO_DEFAULT => static::OP_ALL,
         ];
     }
 
@@ -97,6 +130,14 @@ class Category extends \yii\db\ActiveRecord
     public static function find()
     {
         return new NestedQuery(get_called_class());
+    }
+
+    /**
+     * @return NestedQuery
+     */
+    public static function active()
+    {
+        return self::find()->andWhere(['is_active'=>1]);
     }
     
     public function beforeDelete() 
@@ -113,6 +154,22 @@ class Category extends \yii\db\ActiveRecord
     {
         $childrenIds = $this->children()->select(['id'])->column();
         return $this->updateAll($attributes, ['id' => $childrenIds]);
+    }
+
+    public function getCategoryToItems()
+    {
+        $relation = Module::getModel($this, 'CategoryToItem');
+        return self::hasMany($relation::className(), ['category_id' => 'id']);
+    }
+
+    /**
+     * @return ActiveQuery
+     */
+    public function getItems()
+    {
+        $relation = Module::getModel($this, 'Item');
+        return self::hasMany($relation::className(), ['id' => 'item_id'])
+            ->via('categoryToItems');
     }
 
     public static function activeItems($items)
@@ -159,5 +216,17 @@ class Category extends \yii\db\ActiveRecord
             }
         }
         return false;
+    }
+
+    /**
+     * Relative path for saving model files.
+     * @return string path.
+     */
+    public function getStoragePath()
+    {
+        $moduleName = \bariew\postModule\Module::moduleName($this);
+        $user_id = $this->getAttribute('user_id') ? : Yii::$app->user->id;
+        return "@app/web/files/{$user_id}/{$moduleName}/"
+            . $this->formName() . '/' . $this->id;
     }
 }

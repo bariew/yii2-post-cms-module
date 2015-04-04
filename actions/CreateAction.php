@@ -22,6 +22,9 @@ use bariew\postModule\controllers\ItemController;
  */
 class CreateAction extends Action
 {
+    public $view = 'create';
+    public $redirectAction = 'view';
+
     /**
      * @inheritdoc
      */
@@ -29,11 +32,9 @@ class CreateAction extends Action
     {
         $model = $this->controller->findModel(null);
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->controller->redirect(['view', 'id' => $model->id]);
+            return $this->controller->redirect([$this->redirectAction, 'id' => $model->id]);
         } else {
-            return $this->controller->render('create', [
-                'model' => $model,
-            ]);
+            return $this->controller->render($this->view, compact('model'));
         }
     }
 }

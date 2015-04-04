@@ -22,6 +22,7 @@ use bariew\postModule\controllers\ItemController;
  */
 class DeleteAction extends Action
 {
+    public $redirectAction = ['index'];
     /**
      * @inheritdoc
      */
@@ -29,6 +30,6 @@ class DeleteAction extends Action
     {
         $this->controller->findModel($id)->delete();
 
-        return $this->controller->redirect(['index']);
+        return $this->controller->redirect($this->redirectAction);
     }
 }

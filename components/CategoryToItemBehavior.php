@@ -7,6 +7,7 @@
  */
 
 namespace bariew\postModule\components;
+use bariew\postModule\Module;
 use yii\db\ActiveRecord;
 use yii\helpers\ArrayHelper;
 
@@ -47,7 +48,7 @@ class CategoryToItemBehavior extends \yii\base\Behavior
     public function allCategoryList()
     {
         return ArrayHelper::map(
-            $this->getModel('Category')->find()->asArray()->all(), 'id', 'name');
+            $this->getModel('Category')->active()->asArray()->all(), 'id', 'name');
     }
     
     public function getCategoryToItem()
@@ -101,12 +102,11 @@ class CategoryToItemBehavior extends \yii\base\Behavior
     
     /**
      * 
-     * @param type $formName
+     * @param string $formName
      * @return ActiveRecord $model
      */
     protected function getModel($formName)
     {
-        $class = preg_replace('/(.*\\\\)\w+$/', '$1'.$formName, get_class($this->owner));
-        return new $class();
+        return Module::getModel($this->owner, $formName);
     }
 }

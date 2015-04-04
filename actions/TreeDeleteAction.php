@@ -1,6 +1,6 @@
 <?php
 /**
- * UpdateAction class file.
+ * DeleteAction class file.
  * @copyright (c) 2015, bariew
  * @license http://www.opensource.org/licenses/bsd-license.php
  */
@@ -20,21 +20,16 @@ use bariew\postModule\controllers\ItemController;
  *
  * @property ItemController $controller
  */
-class UpdateAction extends Action
+class TreeDeleteAction extends Action
 {
-    public $view = 'update';
-    public $redirectAction = 'view';
-
+    public $redirectAction = ['index'];
     /**
      * @inheritdoc
      */
     public function run($id)
     {
-        $model = $this->controller->findModel($id);
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->controller->redirect([$this->redirectAction, 'id' => $model->id]);
-        } else {
-            return $this->controller->render($this->view, compact('model'));
-        }
+        $this->controller->findModel($id)->deleteWithChildren();
+
+        return $this->controller->redirect($this->redirectAction);
     }
 }

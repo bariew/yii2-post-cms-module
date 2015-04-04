@@ -16,11 +16,16 @@ $this->params['breadcrumbs'][] = $this->title;
         'dataProvider' => $dataProvider,
         'filterModel' => $searchModel,
         'columns' => [
-            ['class' => 'yii\grid\SerialColumn'],
-            'id',
             'title',
             'name',
-            'content:ntext',
+            [
+                'attribute' => 'is_active',
+                'format' => 'boolean',
+                'filter' => Html::activeDropDownList($searchModel, 'is_active', $searchModel::activeList(), [
+                    'class' => 'form-control',
+                    'prompt' => ''
+                ])
+            ],
             ['class' => 'yii\grid\ActionColumn'],
         ],
     ]); ?>

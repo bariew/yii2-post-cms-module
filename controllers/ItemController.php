@@ -126,8 +126,11 @@ class ItemController extends Controller
      */
     public function findModel($condition, $search = false)
     {
-        $model = Module::getControllerModel($this,
-            ($search ? $this->searchModelName : $this->modelName));
+        $model = Module::getModel(
+            $this,
+            ($search ? $this->searchModelName : $this->modelName),
+            ['controllers' => 'models']
+        );
         if ($condition && (!$model = $model::findOne($condition))) {
             throw new NotFoundHttpException('The requested page does not exist.');
         }

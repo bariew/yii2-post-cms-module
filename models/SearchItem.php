@@ -7,10 +7,9 @@
 
 namespace bariew\postModule\models;
 
+use bariew\postModule\Module;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
-use bariew\postModule\models\Item;
-use yii\db\ActiveRecord;
 
 /**
  * Searches post items.
@@ -22,12 +21,12 @@ use yii\db\ActiveRecord;
 class SearchItem extends Item
 {
     public $category_id;
-    
-    public static function tableName() 
+
+    public static function tableName()
     {
-        $class = str_replace('SearchItem', 'Item', get_called_class());
-        return $class::tableName();
+        return Module::getModel(static::className(), 'Item')->tableName();
     }
+
     /**
      * @inheritdoc
      */
@@ -59,17 +58,13 @@ class SearchItem extends Item
      */
     public function search($params)
     {
-        /**
-         * @var ActiveRecord $class
-         */
-        $class = str_replace('SearchItem', 'Item', get_class($this));
-        $query = $class::find()->andFilterWhere(['user_id' => $this->user_id]);
+        $model = Module::getModel($this, 'Item');
+        $query = $model::find()->andFilterWhere(['user_id' => $this->user_id]);
         $dataProvider = new ActiveDataProvider(compact('query'));
         $this->load($params);
         if (!$this->validate()) {
             return $dataProvider;
         }
-        //print_r($this->attributes);exit;
 
         $query->andFilterWhere([
             'id' => $this->id,

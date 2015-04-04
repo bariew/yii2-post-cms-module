@@ -10,9 +10,12 @@ use yii\widgets\ActiveForm;
 
 <div class="category-form">
 
-    <?php $form = ActiveForm::begin(); ?>
+    <?php $form = ActiveForm::begin(['options' => ['enctype' => 'multipart/form-data']]); ?>
 
     <?= $form->field($model, 'title')->textInput(['maxlength' => 255]) ?>
+
+    <?= $form->field($model, 'image[]')->fileInput(['multiple' => true]) ?>
+    <?= \bariew\postModule\widgets\ImageGallery::widget(['model' => $model, 'field' => 'thumb1']); ?>
 
     <?= $form->field($model, 'name')->textInput(['maxlength' => 255]) ?>
 

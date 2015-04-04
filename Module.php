@@ -36,23 +36,16 @@ class Module extends \yii\base\Module
      *
      * @param $model
      * @param string $formName
+     * @param array $replacements
      * @return ActiveRecord $model
      */
-    public static function getModel($model, $formName)
+    public static function getModel($model, $formName = null, $replacements = [])
     {
-        $class = preg_replace('/(.*\\\\)\w+$/', '$1' . $formName, get_class($model));
-        return new $class();
-    }
-
-    /**
-     * @param $controller
-     * @param $formName
-     * @return ActiveRecord
-     */
-    public static function getControllerModel($controller, $formName)
-    {
-        $class = preg_replace('/^(.*)(controllers).*$/', '$1models', get_class($controller))
-            . '\\'. $formName;
+        $class = is_string($model) ? $model : get_class($model);
+        $class = $formName
+            ? preg_replace('/(.*\\\\)\w+$/', '$1' . $formName, $class)
+            : $class;
+        $class = str_replace(array_keys($replacements), array_values($replacements), $class);
         return new $class();
     }
 }

@@ -2,17 +2,21 @@
 
 namespace bariew\postModule\models;
 
+use bariew\postModule\Module;
 use Yii;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
-use bariew\postModule\models\Category;
-use yii\db\ActiveRecord;
 
 /**
  * SearchCategory represents the model behind the search form about `bariew\postModule\models\Category`.
  */
 class SearchCategory extends Category
 {
+    public static function tableName()
+    {
+        return Module::getModel(static::className(), 'Category')->tableName();
+    }
+
     /**
      * @inheritdoc
      */
@@ -20,7 +24,8 @@ class SearchCategory extends Category
     {
         return [
             [['id', 'lft', 'rgt', 'depth', 'is_active'], 'integer'],
-            [['title', 'name', 'content'], 'safe'],
+            [['is_active'], 'default', 'value' => 1],
+            [['title', 'name', 'content'], 'string'],
         ];
     }
 
@@ -42,29 +47,19 @@ class SearchCategory extends Category
      */
     public function search($params)
     {
-        /**
-         * @var ActiveRecord $class
-         */
-        $class = str_replace('SearchCategory', 'Category', get_class($this));
-        $query = $class::find();
-
+        $model = Module::getModel($this, 'Category');
+        $query = $model::find();
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
         ]);
 
         $this->load($params);
-
         if (!$this->validate()) {
-            // uncomment the following line if you do not want to any records when validation fails
-            // $query->where('0=1');
+            $query->andFilterWhere(['is_active' => $this->is_active]);
             return $dataProvider;
         }
 
         $query->andFilterWhere([
-            'id' => $this->id,
-            'lft' => $this->lft,
-            'rgt' => $this->rgt,
-            'depth' => $this->depth,
             'is_active' => $this->is_active,
         ]);
 

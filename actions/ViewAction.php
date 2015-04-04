@@ -22,12 +22,13 @@ use bariew\postModule\controllers\ItemController;
  */
 class ViewAction extends Action
 {
+    public $view = 'view';
     /**
      * @inheritdoc
      */
     public function run($id)
     {
-        return $this->controller->render('view', [
+        return $this->controller->render($this->view, [
             'model' => $this->controller->findModel($id),
         ]);
     }

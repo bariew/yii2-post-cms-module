@@ -22,6 +22,11 @@ use bariew\postModule\controllers\ItemController;
  */
 class IndexAction extends Action
 {
+    public $view = 'index';
+    public $ajaxView = 'index-ajax';
+    public $params = [];
+    public $search = [];
+
     /**
      * @inheritdoc
      */
@@ -31,10 +36,15 @@ class IndexAction extends Action
          * @var SearchItem $searchModel
          */
         $searchModel = $this->controller->findModel(null, true);
-        $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
-        
+        $data = array_merge([
+            'searchModel' => $searchModel,
+            'dataProvider' => $searchModel->search(
+                array_merge(Yii::$app->request->queryParams, $this->search
+            )),
+        ], $this->params);
+
         return Yii::$app->request->isAjax
-            ? $this->controller->renderPartial('index-ajax', compact('searchModel', 'dataProvider'))
-            : $this->controller->render('index', compact('searchModel', 'dataProvider'));
+            ? $this->controller->renderPartial($this->ajaxView, $data)
+            : $this->controller->render($this->view, $data);
     }
 }

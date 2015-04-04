@@ -1,6 +1,6 @@
 <?php
 /**
- * UpdateAction class file.
+ * CreateAction class file.
  * @copyright (c) 2015, bariew
  * @license http://www.opensource.org/licenses/bsd-license.php
  */
@@ -20,21 +20,20 @@ use bariew\postModule\controllers\ItemController;
  *
  * @property ItemController $controller
  */
-class UpdateAction extends Action
+class TreeUpdateAction extends Action
 {
-    public $view = 'update';
-    public $redirectAction = 'view';
-
     /**
      * @inheritdoc
      */
     public function run($id)
     {
         $model = $this->controller->findModel($id);
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->controller->redirect([$this->redirectAction, 'id' => $model->id]);
-        } else {
-            return $this->controller->render($this->view, compact('model'));
+        $attributes = [
+            'name' => \Yii::$app->request->post('attributes')['title']
+        ];
+        if ($model->load($attributes, '') && $model->save()) {
+            return true;
         }
+        throw new \yii\web\BadRequestHttpException();
     }
 }
