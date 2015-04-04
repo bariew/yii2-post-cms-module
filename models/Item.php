@@ -11,6 +11,8 @@ use Yii;
 use \yii\db\ActiveRecord;
 use \bariew\yii2Tools\behaviors\FileBehavior;
 use bariew\postModule\components\CategoryToItemBehavior;
+use yii\db\ActiveQuery;
+
 /**
  * Description.
  *
@@ -101,6 +103,14 @@ class Item extends ActiveRecord
             'image' => Yii::t('modules/post', 'Image'),
             'categoryIds' => Yii::t('modules/post', 'Category list'),
         ];
+    }
+
+    /**
+     * @return ActiveQuery
+     */
+    public static function active()
+    {
+        return self::find()->andWhere(['is_active' => 1]);
     }
     
     /**

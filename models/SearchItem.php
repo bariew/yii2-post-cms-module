@@ -35,6 +35,7 @@ class SearchItem extends Item
         return [
             [['id', 'is_active'], 'integer'],
             [['title', 'brief', 'content', 'image', 'created_at'], 'safe'],
+            [['is_active'], 'default', 'value' => 1],
             [['user_id'], 'integer', 'on' => self::SCENARIO_ADMIN],
             [['category_id'], 'safe']
         ];
@@ -63,6 +64,7 @@ class SearchItem extends Item
         $dataProvider = new ActiveDataProvider(compact('query'));
         $this->load($params);
         if (!$this->validate()) {
+            $query->andFilterWhere(['is_active' => $this->is_active]);
             return $dataProvider;
         }
 

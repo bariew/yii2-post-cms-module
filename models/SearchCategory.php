@@ -58,12 +58,8 @@ class SearchCategory extends Category
             $query->andFilterWhere(['is_active' => $this->is_active]);
             return $dataProvider;
         }
-
-        $query->andFilterWhere([
-            'is_active' => $this->is_active,
-        ]);
-
         $query->andFilterWhere(['like', 'title', $this->title])
+            ->andFilterWhere(['is_active' => $this->is_active])
             ->andFilterWhere(['like', 'name', $this->name])
             ->andFilterWhere(['like', 'content', $this->content]);
 
