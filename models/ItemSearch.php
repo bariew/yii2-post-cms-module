@@ -36,7 +36,7 @@ class ItemSearch extends Item
         return [
             [['id', 'is_active'], 'integer'],
             [['title', 'brief', 'content', 'image', 'created_at'], 'safe'],
-            [['is_active'], 'default', 'value' => 1],
+            [['is_active'], 'boolean'],
             [['user_id'], 'integer', 'on' => self::SCENARIO_ADMIN],
             [['category_id'], 'safe', 'on' => [self::SCENARIO_ADMIN, self::SCENARIO_USER]]
         ];
@@ -60,7 +60,7 @@ class ItemSearch extends Item
      */
     public function search($params = [])
     {
-        $model = Module::getModel($this, 'Item');
+        $model = Module::getModel($this, 'Item', [], ['scenario' => $this->scenario]);
         /**
          * @var ActiveQuery $query
          */
@@ -68,7 +68,6 @@ class ItemSearch extends Item
         $dataProvider = new ActiveDataProvider(compact('query'));
         $this->load($params);
         if (!$this->validate()) {
-            $query->andFilterWhere(['is_active' => $this->is_active]);
             return $dataProvider;
         }
 

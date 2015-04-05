@@ -5,7 +5,7 @@ use yii\helpers\Html;
 use yii\grid\GridView;
 
 /* @var $this yii\web\View */
-/* @var $searchModel bariew\postModule\models\SearchItem */
+/* @var $searchModel bariew\postModule\models\ItemSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
 $this->title = Yii::t('modules/post', 'Items');
@@ -30,6 +30,11 @@ $this->params['breadcrumbs'][] = $this->title;
             'user_id',
             'title',
             'is_active:boolean',
+            [
+                'format' => 'boolean',
+                'attribute' => 'is_active',
+                'filter' => Html::activeDropDownList($searchModel, 'is_active', $searchModel::activeList())
+            ],
             [
                 'attribute' => 'created_at',
                 'format' => 'datetime',

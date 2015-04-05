@@ -43,6 +43,8 @@ use yii\db\ActiveQuery;
  */
 class Category extends \yii\db\ActiveRecord
 {
+    const SCENARIO_ADMIN = 'admin';
+
     public $items = [];
 
     /**
@@ -64,6 +66,42 @@ class Category extends \yii\db\ActiveRecord
             [['title', 'name'], 'string', 'max' => 255],
             ['image', 'image', 'maxFiles' => 10],
         ];
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function init()
+    {
+        parent::init();
+        switch ($this->scenario) {
+            case self::SCENARIO_ADMIN:
+
+                break;
+            default : $this->is_active = 1;
+        }
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function scenarios()
+    {
+        return [
+            self::SCENARIO_ADMIN => [
+                'content', 'title', 'is_active', 'name', 'image'
+            ],
+            self::SCENARIO_DEFAULT => []
+        ];
+    }
+
+    /**
+     * @param array $params
+     * @return NestedQuery
+     */
+    public function search($params = [])
+    {
+        return self::find()->andFilterWhere(array_merge($this->attributes, $params));
     }
 
     /**
@@ -133,15 +171,6 @@ class Category extends \yii\db\ActiveRecord
     }
 
     /**
-     * @param array $params
-     * @return NestedQuery
-     */
-    public function search($params = [])
-    {
-        return self::find()->andWhere($params);
-    }
-
-    /**
      * @return NestedQuery
      */
     public static function active()
@@ -205,10 +234,20 @@ class Category extends \yii\db\ActiveRecord
         foreach ($items as $item) {
             $parents[$item['depth']][$item['lft']] = $item;
             if (!isset($parents[$item['depth']-1])) {
+                $resultEnd = end($result);
+                if (!$resultEnd || ($resultEnd['depth'] == $item['depth'])) {
+                } else if ($resultEnd['depth'] > $item['depth']) {
+                    $result = []; // We will unset previous result if its depth more than current
+                } else {
+                    continue; // we will not include current to result as its depth more that results roots
+                }
                 $result[$item['lft']] = &$parents[$item['depth']][$item['lft']];
                 continue;
             }
-            end($parents[$item['depth']-1]);
+            $parent = end($parents[$item['depth']-1]);
+            if (!self::isChildOfArray([$parent], $item)) {
+                continue;
+            }
             $key = key($parents[$item['depth']-1]);
             $parents[$item['depth']-1][$key]['items'][$item['lft']]
                 = &$parents[$item['depth']][$item['lft']];
@@ -218,7 +257,7 @@ class Category extends \yii\db\ActiveRecord
 
     public static function isChildOfArray($parents, $child)
     {
-        foreach ((array) $parents as $parent) {
+        foreach ($parents as $parent) {
             if ($child['lft'] > $parent['lft']
                 && $child['rgt'] < $parent['rgt']) {
                 return true;

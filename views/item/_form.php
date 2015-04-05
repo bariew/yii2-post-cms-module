@@ -38,7 +38,7 @@ use kartik\widgets\Select2;
                 'fileUploadErrorCallback'  => new \yii\web\JsExpression('function(json) { alert(json.error); }'),
              ]
         ]);?>
-        <?php if ($model->hasErrors('content')): ?>
+        <?php if ($model->hasErrors('brief')): ?>
         <div class="has-error">
             <?php echo \yii\helpers\Html::error($model, 'brief', $form->field($model, 'brief')->errorOptions); ?>
         </div>

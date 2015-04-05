@@ -23,7 +23,7 @@ class CategoryController extends ItemController
 
     public function getScenario()
     {
-        return Category::SCENARIO_DEFAULT;
+        return Category::SCENARIO_ADMIN;
     }
 
     public function actions()

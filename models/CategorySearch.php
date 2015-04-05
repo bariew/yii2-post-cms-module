@@ -44,8 +44,14 @@ class CategorySearch extends Category
      */
     public function scenarios()
     {
-        // bypass scenarios() implementation in the parent class
-        return Model::scenarios();
+        return [
+            self::SCENARIO_ADMIN => [
+                'content', 'title', 'is_active', 'name', 'image'
+            ],
+            self::SCENARIO_DEFAULT => [
+                'content', 'title', 'is_active', 'name', 'image'
+            ]
+        ];
     }
 
     /**
@@ -57,7 +63,7 @@ class CategorySearch extends Category
      */
     public function search($params = [])
     {
-        $model = Module::getModel($this, 'Category');
+        $model = Module::getModel($this, 'Category', ['scenario' => $this->scenario]);
         /**
          * @var ActiveQuery $query
          */

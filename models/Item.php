@@ -30,6 +30,7 @@ use yii\db\ActiveQuery;
  *
  * @method FileBehavior getRemoveLink
  * @method FileBehavior getFileLink
+ * @method FileBehavior getFilePositionLink
  * @method FileBehavior linkList
  * @method FileBehavior deleteFile
  * @method FileBehavior renameFile
@@ -64,36 +65,10 @@ class Item extends ActiveRecord
         ];
     }
 
-
     /**
      * @inheritdoc
      */
-    public function init()
-    {
-        parent::init();
-        switch ($this->scenario) {
-            case self::SCENARIO_USER :
-                $this->user_id = Yii::$app->user->id;
-                break;
-        }
-    }
-
-    /**
-     * Gets search query according to model scenario.
-     * @param array $params search params key=>value
-     * @return ActiveQuery
-     */
-    public function search($params = [])
-    {
-        return self::find()->andFilterWhere(array_merge($params, [
-            'user_id' => $this->user_id
-        ]));
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function behaviors() 
+    public function behaviors()
     {
         return [
             \yii\behaviors\TimestampBehavior::className(),
@@ -112,7 +87,33 @@ class Item extends ActiveRecord
             ]
         ];
     }
-    
+
+    /**
+     * @inheritdoc
+     */
+    public function init()
+    {
+        parent::init();
+        switch ($this->scenario) {
+            case self::SCENARIO_USER :
+                $this->user_id = Yii::$app->user->id;
+                break;
+            case self::SCENARIO_DEFAULT:
+                $this->is_active = 1;
+                break;
+        }
+    }
+
+    /**
+     * Gets search query according to model scenario.
+     * @param array $params search params key=>value
+     * @return ActiveQuery
+     */
+    public function search($params = [])
+    {
+        return $this::find()->andFilterWhere(array_merge($this->attributes, $params));
+    }
+
     /**
      * @inheritdoc
      */
@@ -139,7 +140,19 @@ class Item extends ActiveRecord
     {
         return self::find()->andWhere(['is_active' => 1]);
     }
-    
+
+    /**
+     * is_active field available values.
+     * @return array
+     */
+    public static function activeList()
+    {
+        return [
+            0 => Yii::t('modules/post', 'No'),
+            1 => Yii::t('modules/post', 'Yes'),
+        ];
+    }
+
     /**
      * Relative path for saving model files.
      * @return string path.

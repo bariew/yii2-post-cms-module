@@ -37,6 +37,7 @@ class Module extends \yii\base\Module
      * @param $model
      * @param string $formName
      * @param array $replacements
+     * @param array $initData
      * @return object $model
      */
     public static function getModel($model, $formName = null, $replacements = [], $initData = [])
