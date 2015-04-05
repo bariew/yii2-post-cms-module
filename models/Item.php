@@ -61,6 +61,7 @@ class Item extends ActiveRecord
             [['title'], 'string', 'max' => 255],
             ['image', 'image', 'maxFiles' => 10],
             [['categoryIds'], 'safe', 'on' => [self::SCENARIO_ADMIN, self::SCENARIO_USER]],
+            ['user_id', 'required', 'on' => self::SCENARIO_ADMIN],
             ['user_id', 'integer', 'on' => self::SCENARIO_ADMIN],
         ];
     }
