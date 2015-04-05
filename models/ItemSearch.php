@@ -1,6 +1,6 @@
 <?php
 /**
- * Model class file.
+ * ItemSearch class file.
  * @copyright (c) 2015, Pavel Bariev
  * @license http://www.opensource.org/licenses/bsd-license.php
  */
@@ -10,6 +10,7 @@ namespace bariew\postModule\models;
 use bariew\postModule\Module;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
+use yii\db\ActiveQuery;
 
 /**
  * Searches post items.
@@ -18,7 +19,7 @@ use yii\data\ActiveDataProvider;
  * @example
  * @author Pavel Bariev <bariew@yandex.ru>
  */
-class SearchItem extends Item
+class ItemSearch extends Item
 {
     public $category_id;
 
@@ -37,7 +38,7 @@ class SearchItem extends Item
             [['title', 'brief', 'content', 'image', 'created_at'], 'safe'],
             [['is_active'], 'default', 'value' => 1],
             [['user_id'], 'integer', 'on' => self::SCENARIO_ADMIN],
-            [['category_id'], 'safe']
+            [['category_id'], 'safe', 'on' => [self::SCENARIO_ADMIN, self::SCENARIO_USER]]
         ];
     }
 
@@ -57,10 +58,13 @@ class SearchItem extends Item
      *
      * @return ActiveDataProvider
      */
-    public function search($params)
+    public function search($params = [])
     {
         $model = Module::getModel($this, 'Item');
-        $query = $model::find()->andFilterWhere(['user_id' => $this->user_id]);
+        /**
+         * @var ActiveQuery $query
+         */
+        $query = $model->search();
         $dataProvider = new ActiveDataProvider(compact('query'));
         $this->load($params);
         if (!$this->validate()) {

@@ -37,15 +37,15 @@ class Module extends \yii\base\Module
      * @param $model
      * @param string $formName
      * @param array $replacements
-     * @return ActiveRecord $model
+     * @return object $model
      */
-    public static function getModel($model, $formName = null, $replacements = [])
+    public static function getModel($model, $formName = null, $replacements = [], $initData = [])
     {
         $class = is_string($model) ? $model : get_class($model);
         $class = $formName
             ? preg_replace('/(.*\\\\)\w+$/', '$1' . $formName, $class)
             : $class;
         $class = str_replace(array_keys($replacements), array_values($replacements), $class);
-        return new $class();
+        return new $class($initData);
     }
 }

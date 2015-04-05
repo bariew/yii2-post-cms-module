@@ -1,22 +1,28 @@
 <?php
+/**
+ * UserItemController class file.
+ * @copyright (c) 2015, Pavel Bariev
+ * @license http://www.opensource.org/licenses/bsd-license.php
+ */
 
 namespace bariew\postModule\controllers;
-
+use bariew\postModule\models\Item;
 
 /**
- * UserItemController implements the CRUD actions for Item model.
+ * Description.
+ *
+ * Usage:
+ * @author Pavel Bariev <bariew@yandex.ru>
+ *
  */
 class UserItemController extends ItemController
 {
     /**
-     * @inheritdoc
+     * Gets scenario for model.
+     * @return string
      */
-    public function findModel($id, $search = false)
+    public function getScenario()
     {
-        $condition = $id ? (['id' => $id, 'user_id' => \Yii::$app->user->id]) : null;
-        $model = parent::findModel($condition, $search);
-        $model->scenario = \yii\db\ActiveRecord::SCENARIO_DEFAULT;
-        $model->user_id = \Yii::$app->user->id; // we need to rewrite search user_id params
-        return $model;
+        return Item::SCENARIO_ADMIN;
     }
 }

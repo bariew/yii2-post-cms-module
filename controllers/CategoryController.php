@@ -18,9 +18,13 @@ use yii\web\NotFoundHttpException;
 class CategoryController extends ItemController
 {
     public $layout = 'menu';
-
-    public $searchModelName = 'SearchCategory';
+    public $searchModelName = 'CategorySearch';
     public $modelName = 'Category';
+
+    public function getScenario()
+    {
+        return Category::SCENARIO_DEFAULT;
+    }
 
     public function actions()
     {
@@ -30,26 +34,5 @@ class CategoryController extends ItemController
             'tree-move' => TreeMoveAction::className(),
             'tree-update' => TreeUpdateAction::className(),
         ]);
-    }
-
-    /**
-     * Finds the Item model based on its primary key value.
-     * If the model is not found, a 404 HTTP exception will be thrown.
-     * @param integer|array|null $condition
-     * @param boolean $search
-     * @return Category|SearchCategory the loaded model
-     * @throws NotFoundHttpException if the model cannot be found
-     */
-    public function findModel($condition, $search = false)
-    {
-        $model = Module::getModel(
-            $this,
-            ($search ? $this->searchModelName : $this->modelName),
-            ['controllers' => 'models']
-        );
-        if ($condition && (!$model = $model::findOne($condition))) {
-            throw new NotFoundHttpException('The requested page does not exist.');
-        }
-        return $model;
     }
 }

@@ -8,7 +8,7 @@
 namespace bariew\postModule\actions;
 
 use yii\base\Action;
-use bariew\postModule\models\SearchItem;
+use bariew\postModule\models\ItemSearch;
 use Yii;
 use bariew\postModule\controllers\ItemController;
 
@@ -33,9 +33,9 @@ class IndexAction extends Action
     public function run()
     {
         /**
-         * @var SearchItem $searchModel
+         * @var ItemSearch $searchModel
          */
-        $searchModel = $this->controller->findModel(null, true);
+        $searchModel = $this->controller->findModel(false, true);
         $data = array_merge([
             'searchModel' => $searchModel,
             'dataProvider' => $searchModel->search(

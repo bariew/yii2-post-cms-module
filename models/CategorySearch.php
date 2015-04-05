@@ -1,4 +1,9 @@
 <?php
+/**
+ * CategorySearch class file.
+ * @copyright (c) 2015, Pavel Bariev
+ * @license http://www.opensource.org/licenses/bsd-license.php
+ */
 
 namespace bariew\postModule\models;
 
@@ -6,11 +11,16 @@ use bariew\postModule\Module;
 use Yii;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
+use yii\db\ActiveQuery;
 
 /**
- * SearchCategory represents the model behind the search form about `bariew\postModule\models\Category`.
+ * Description.
+ *
+ * Usage:
+ * @author Pavel Bariev <bariew@yandex.ru>
+ *
  */
-class SearchCategory extends Category
+class CategorySearch extends Category
 {
     public static function tableName()
     {
@@ -45,10 +55,13 @@ class SearchCategory extends Category
      *
      * @return ActiveDataProvider
      */
-    public function search($params)
+    public function search($params = [])
     {
         $model = Module::getModel($this, 'Category');
-        $query = $model::find();
+        /**
+         * @var ActiveQuery $query
+         */
+        $query = $model->search();
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
         ]);

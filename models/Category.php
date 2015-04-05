@@ -133,6 +133,15 @@ class Category extends \yii\db\ActiveRecord
     }
 
     /**
+     * @param array $params
+     * @return NestedQuery
+     */
+    public function search($params = [])
+    {
+        return self::find()->andWhere($params);
+    }
+
+    /**
      * @return NestedQuery
      */
     public static function active()

@@ -38,7 +38,8 @@ use yii\db\ActiveQuery;
 class Item extends ActiveRecord
 {
     const SCENARIO_ADMIN = 'admin';
-    
+    const SCENARIO_USER = 'user';
+
     /**
      * @inheritdoc
      */
@@ -46,7 +47,7 @@ class Item extends ActiveRecord
     {
         return 'post_item';
     }
-    
+
     /**
      * @inheritdoc
      */
@@ -58,11 +59,37 @@ class Item extends ActiveRecord
             [['brief', 'content'], 'string'],
             [['title'], 'string', 'max' => 255],
             ['image', 'image', 'maxFiles' => 10],
-            [['categoryIds'], 'safe'],
+            [['categoryIds'], 'safe', 'on' => [self::SCENARIO_ADMIN, self::SCENARIO_USER]],
             ['user_id', 'integer', 'on' => self::SCENARIO_ADMIN],
         ];
     }
-        
+
+
+    /**
+     * @inheritdoc
+     */
+    public function init()
+    {
+        parent::init();
+        switch ($this->scenario) {
+            case self::SCENARIO_USER :
+                $this->user_id = Yii::$app->user->id;
+                break;
+        }
+    }
+
+    /**
+     * Gets search query according to model scenario.
+     * @param array $params search params key=>value
+     * @return ActiveQuery
+     */
+    public function search($params = [])
+    {
+        return self::find()->andFilterWhere(array_merge($params, [
+            'user_id' => $this->user_id
+        ]));
+    }
+
     /**
      * @inheritdoc
      */

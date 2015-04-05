@@ -15,7 +15,7 @@ use bariew\postModule\actions\ViewAction;
 use bariew\postModule\Module;
 use Yii;
 use bariew\postModule\models\Item;
-use bariew\postModule\models\SearchItem;
+use bariew\postModule\models\ItemSearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
@@ -27,13 +27,21 @@ use yii\filters\VerbFilter;
  */
 class ItemController extends Controller
 {
-    public $searchModelName = 'SearchItem';
-    public $modelName = 'Item';
-
     /**
      * @var string model uploaded files storage path.
      */
     protected $_storagePath;
+    public $searchModelName = 'ItemSearch';
+    public $modelName = 'Item';
+
+    /**
+     * Gets scenario for model.
+     * @return string
+     */
+    public function getScenario()
+    {
+        return Item::SCENARIO_ADMIN;
+    }
 
     /**
      * Gets path to model uploaded files.
@@ -67,7 +75,6 @@ class ItemController extends Controller
             ],
         ];
     }
-
     
     /**
      * @inheritdoc
@@ -119,22 +126,23 @@ class ItemController extends Controller
     /**
      * Finds the Item model based on its primary key value.
      * If the model is not found, a 404 HTTP exception will be thrown.
-     * @param integer|array|null $condition
+     * @param integer|boolean $id
      * @param boolean $search
-     * @return Item|SearchItem the loaded model
+     * @return Item|ItemSearch the loaded model
      * @throws NotFoundHttpException if the model cannot be found
      */
-    public function findModel($condition, $search = false)
+    public function findModel($id = false, $search = false)
     {
         $model = Module::getModel(
             $this,
             ($search ? $this->searchModelName : $this->modelName),
-            ['controllers' => 'models']
+            ['controllers' => 'models'],
+            ['scenario' => $this->getScenario()]
         );
-        if ($condition && (!$model = $model::findOne($condition))) {
+        if ($id && (!$model = $model->search(compact('id'))->one())) {
             throw new NotFoundHttpException('The requested page does not exist.');
         }
-        $model->scenario = $model::SCENARIO_ADMIN;
+        $model->scenario = $this->getScenario(); // for found model too
         return $model;
     }
 }
