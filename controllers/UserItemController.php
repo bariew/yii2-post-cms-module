@@ -23,6 +23,6 @@ class UserItemController extends ItemController
      */
     public function getScenario()
     {
-        return Item::SCENARIO_ADMIN;
+        return Item::SCENARIO_USER;
     }
 }
