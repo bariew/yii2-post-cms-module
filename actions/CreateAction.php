@@ -36,6 +36,7 @@ class CreateAction extends Action
             $model->setAttribute($attribute, $value);
         };
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
+            Yii::$app->session->addFlash('success', Yii::t('modules/post', 'Successfully created.'));
             return $this->controller->redirect([$this->redirectAction, 'id' => $model->id]);
         } else {
             return $this->controller->render($this->view, compact('model'));

@@ -32,6 +32,7 @@ class UpdateAction extends Action
     {
         $model = $this->controller->findModel($id);
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
+            Yii::$app->session->addFlash('success', Yii::t('modules/post', 'Successfully updated.'));
             return $this->controller->redirect([$this->redirectAction, 'id' => $model->id]);
         } else {
             return $this->controller->render($this->view, compact('model'));

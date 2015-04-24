@@ -28,7 +28,11 @@ class DeleteAction extends Action
      */
     public function run($id)
     {
-        $this->controller->findModel($id)->delete();
+        if ($this->controller->findModel($id)->delete()) {
+            Yii::$app->session->addFlash('success', Yii::t('modules/post', 'Successfully deleted.'));
+        } else {
+            Yii::$app->session->addFlash('error', Yii::t('modules/post', 'Could not delete item.'));
+        }
 
         return $this->controller->redirect($this->redirectAction);
     }
