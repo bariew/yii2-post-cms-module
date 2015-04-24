@@ -65,7 +65,12 @@ class ItemSearch extends Item
          * @var ActiveQuery $query
          */
         $query = $model->search();
-        $dataProvider = new ActiveDataProvider(compact('query'));
+        $dataProvider = new ActiveDataProvider([
+            'query' => $query,
+            'sort' => [
+                'defaultOrder' => ['created_at' => SORT_DESC]
+            ]
+        ]);
         $this->load($params);
         if (!$this->validate()) {
             return $dataProvider;
