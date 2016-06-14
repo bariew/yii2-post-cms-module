@@ -1,7 +1,6 @@
 <?php
 
 namespace bariew\postModule;
-use yii\db\ActiveRecord;
 
 class Module extends \yii\base\Module
 {
@@ -16,10 +15,6 @@ class Module extends \yii\base\Module
                 [
                     'label'    => 'Admin categories',
                     'url' => ['/post/category/index']
-                ],
-                [
-                    'label'    => 'My posts',
-                    'url' => ['/post/user-item/index']
                 ],
             ]
         ]
@@ -43,10 +38,27 @@ class Module extends \yii\base\Module
     public static function getModel($model, $formName = null, $replacements = [], $initData = [])
     {
         $class = is_string($model) ? $model : get_class($model);
-        $class = $formName
-            ? preg_replace('/(.*\\\\)\w+$/', '$1' . $formName, $class)
-            : $class;
-        $class = str_replace(array_keys($replacements), array_values($replacements), $class);
+        $class = static::getClass($class, $formName, $replacements);
         return new $class($initData);
+    }
+
+    /**
+     * Gets class name for a model that inherits current modules model.
+     * @param $className
+     * @param null $formName
+     * @param array $replacements
+     * @return \yii\db\ActiveRecord
+     */
+    public static function getClass($className, $formName = null, $replacements = [])
+    {
+        $class = $formName
+            ? preg_replace('/(.*\\\\)\w+$/', '$1' . $formName, $className)
+            : $className;
+        return str_replace(array_keys($replacements), array_values($replacements), $class);
+    }
+
+    public static function getName($className)
+    {
+        return preg_replace('#.*\\\\(\w+)\\\\models\\\\\w+$#','$1', $className);
     }
 }

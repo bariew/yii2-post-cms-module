@@ -34,21 +34,10 @@ class ItemSearch extends Item
     public function rules()
     {
         return [
-            [['id', 'is_active'], 'integer'],
+            [['id', 'is_active', 'owner_id', 'category_id'], 'integer'],
             [['title', 'brief', 'content', 'image', 'created_at'], 'safe'],
             [['is_active'], 'boolean'],
-            [['user_id'], 'integer', 'on' => self::SCENARIO_ADMIN],
-            [['category_id'], 'safe', 'on' => [self::SCENARIO_ADMIN, self::SCENARIO_USER]]
         ];
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function scenarios()
-    {
-        // bypass scenarios() implementation in the parent class
-        return Model::scenarios();
     }
 
     /**
@@ -60,7 +49,8 @@ class ItemSearch extends Item
      */
     public function search($params = [])
     {
-        $model = Module::getModel($this, 'Item', [], ['scenario' => $this->scenario]);
+        /** @var Item $model */
+        $model = Module::getModel($this, 'Item');
         /**
          * @var ActiveQuery $query
          */
@@ -78,7 +68,7 @@ class ItemSearch extends Item
 
         $query->andFilterWhere([
             'id' => $this->id,
-            'user_id' => $this->user_id,
+            'owner_id' => $this->owner_id,
             'is_active' => $this->is_active,
         ]);
 

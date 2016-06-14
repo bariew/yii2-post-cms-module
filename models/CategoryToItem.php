@@ -2,6 +2,7 @@
 
 namespace bariew\postModule\models;
 
+use bariew\postModule\Module;
 use Yii;
 
 /**
@@ -17,7 +18,7 @@ class CategoryToItem extends \yii\db\ActiveRecord
      */
     public static function tableName()
     {
-        return 'post_category_to_item';
+        return '{{%'.Module::getName(static::className()).'_category_to_item}}';
     }
 
     /**

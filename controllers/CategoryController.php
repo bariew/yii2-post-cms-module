@@ -21,11 +21,6 @@ class CategoryController extends ItemController
     public $searchModelName = 'CategorySearch';
     public $modelName = 'Category';
 
-    public function getScenario()
-    {
-        return Category::SCENARIO_ADMIN;
-    }
-
     public function actions()
     {
         return array_merge(parent::actions(), [

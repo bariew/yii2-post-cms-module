@@ -10,7 +10,6 @@ use yii\grid\GridView;
     'summary' => false,
     'columns' => [
         'title',
-        'user_id',
         'is_active:boolean',
         'created_at:datetime',
         ['class' => 'yii\grid\ActionColumn'],

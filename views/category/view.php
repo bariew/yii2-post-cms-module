@@ -37,7 +37,7 @@ $this->params['breadcrumbs'][] = $this->title;
             'title',
             'name',
             'content:ntext',
-            'is_active',
+            'is_active:boolean',
         ],
     ]) ?>
 

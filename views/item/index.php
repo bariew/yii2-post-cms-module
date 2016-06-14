@@ -26,10 +26,7 @@ $this->params['breadcrumbs'][] = $this->title;
         'dataProvider' => $dataProvider,
         'filterModel' => $searchModel,
         'columns' => [
-            'id',
-            'user_id',
             'title',
-            'is_active:boolean',
             [
                 'format' => 'boolean',
                 'attribute' => 'is_active',

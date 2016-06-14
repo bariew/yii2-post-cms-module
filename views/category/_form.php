@@ -20,25 +20,17 @@ use yii\helpers\Url;
 
     <?= $form->field($model, 'name')->textInput(['maxlength' => 255]) ?>
 
-    <div class="form-group required">
-        <?php echo yii\imperavi\Widget::widget([
-            'model' => $model,
-            'attribute' => 'content',
-            'options'   => [
-                'minHeight'                => 300,
-                'fileUpload'               => Url::toRoute(['file-upload', 'attr' => 'content', 'id' => $model->id]),
-                'imageUpload'              => Url::toRoute(['image-upload', 'attr' => 'content', 'id' => $model->id]),
-                'imageGetJson'             => Url::toRoute(['image-list', 'attr' => 'content', 'id' => $model->id]),
-                'imageUploadErrorCallback' => new \yii\web\JsExpression('function(json) { alert(json.error); }'),
-                'fileUploadErrorCallback'  => new \yii\web\JsExpression('function(json) { alert(json.error); }'),
-            ]
-        ]);?>
-        <?php if ($model->hasErrors('content')): ?>
-            <div class="has-error">
-                <?php echo \yii\helpers\Html::error($model, 'content', $form->field($model, 'content')->errorOptions); ?>
-            </div>
-        <?php endif; ?>
-    </div>
+    <?= $form->field($model, 'content')->widget(yii\imperavi\Widget::className(), [
+        'options'   => [
+            'minHeight'                => 300,
+            'fileUpload'               => Url::toRoute(['file-upload', 'attr' => 'content', 'id' => $model->id]),
+            'imageUpload'              => Url::toRoute(['image-upload', 'attr' => 'content', 'id' => $model->id]),
+            'imageGetJson'             => Url::toRoute(['image-list', 'attr' => 'content', 'id' => $model->id]),
+            'imageUploadErrorCallback' => new \yii\web\JsExpression('function(json) { alert(json.error); }'),
+            'fileUploadErrorCallback'  => new \yii\web\JsExpression('function(json) { alert(json.error); }'),
+        ]
+    ]);?>
+
     <?= $form->field($model, 'is_active')->checkbox() ?>
 
     <div class="form-group">

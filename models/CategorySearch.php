@@ -40,21 +40,6 @@ class CategorySearch extends Category
     }
 
     /**
-     * @inheritdoc
-     */
-    public function scenarios()
-    {
-        return [
-            self::SCENARIO_ADMIN => [
-                'content', 'title', 'is_active', 'name', 'image'
-            ],
-            self::SCENARIO_DEFAULT => [
-                'content', 'title', 'is_active', 'name', 'image'
-            ]
-        ];
-    }
-
-    /**
      * Creates data provider instance with search query applied
      *
      * @param array $params
@@ -63,7 +48,7 @@ class CategorySearch extends Category
      */
     public function search($params = [])
     {
-        $model = Module::getModel($this, 'Category', ['scenario' => $this->scenario]);
+        $model = Module::getModel($this, 'Category');
         /**
          * @var ActiveQuery $query
          */

@@ -10,7 +10,7 @@ class m150207_124151_item_create extends Migration
     {
         return $this->createTable(Item::tableName(), [
             'id' => Schema::TYPE_PK,
-            'user_id' => Schema::TYPE_INTEGER,
+            'owner_id' => Schema::TYPE_INTEGER,
             'title' => Schema::TYPE_STRING,
             'brief' => Schema::TYPE_TEXT,
             'content' => Schema::TYPE_TEXT,

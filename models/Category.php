@@ -20,31 +20,14 @@ use yii\db\ActiveQuery;
  * @property integer $rgt
  * @property integer $depth
  * @property integer $is_active
+ * @property integer $owner_id
  * @property Item[] $items
  *
- * @method NestedSetsBehavior makeRoot()
- * @method NestedSetsBehavior prependTo()
- * @method NestedSetsBehavior appendTo()
- * @method NestedSetsBehavior insertBefore()
- * @method NestedSetsBehavior insertAfter()
- * @method NestedSetsBehavior deleteWithChildren()
- * @method NestedSetsBehavior parents()
- * @method NestedSetsBehavior children()
- * @method NestedSetsBehavior prev()
- * @method NestedSetsBehavior next()
- * @method NestedSetsBehavior isRoot()
- * @method NestedSetsBehavior isLeaf()
- *
- * @method FileBehavior getRemoveLink
- * @method FileBehavior getFileLink
- * @method FileBehavior linkList
- * @method FileBehavior deleteFile
- * @method FileBehavior renameFile
+ * @mixin NestedSetsBehavior
+ * @mixin FileBehavior
  */
 class Category extends \yii\db\ActiveRecord
 {
-    const SCENARIO_ADMIN = 'admin';
-
     public $items = [];
 
     /**
@@ -52,7 +35,7 @@ class Category extends \yii\db\ActiveRecord
      */
     public static function tableName()
     {
-        return 'post_category';
+        return '{{%'.Module::getName(static::className()).'_category}}';
     }
 
     /**
@@ -65,33 +48,6 @@ class Category extends \yii\db\ActiveRecord
             [['is_active'], 'integer'],
             [['title', 'name'], 'string', 'max' => 255],
             ['image', 'image', 'maxFiles' => 10],
-        ];
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function init()
-    {
-        parent::init();
-        switch ($this->scenario) {
-            case self::SCENARIO_ADMIN:
-
-                break;
-            default : $this->is_active = 1;
-        }
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function scenarios()
-    {
-        return [
-            self::SCENARIO_ADMIN => [
-                'content', 'title', 'is_active', 'name', 'image'
-            ],
-            self::SCENARIO_DEFAULT => []
         ];
     }
 
@@ -111,6 +67,7 @@ class Category extends \yii\db\ActiveRecord
     {
         return [
             'id' => Yii::t('modules/post', 'ID'),
+            'owner_id' => Yii::t('modules/post', 'Owner ID'),
             'title' => Yii::t('modules/post', 'Title'),
             'name' => Yii::t('modules/post', 'Name'),
             'content' => Yii::t('modules/post', 'Content'),
@@ -152,15 +109,6 @@ class Category extends \yii\db\ActiveRecord
             1 => Yii::t('modules/post', 'Yes'),
         ];
     }
-    /**
-     * @return array
-     */
-    public function transactions()
-    {
-        return [
-            static::SCENARIO_DEFAULT => static::OP_ALL,
-        ];
-    }
 
     /**
      * @return NestedQuery
@@ -177,7 +125,10 @@ class Category extends \yii\db\ActiveRecord
     {
         return self::find()->andWhere(['is_active'=>1]);
     }
-    
+
+    /**
+     * @inheritdoc
+     */
     public function beforeDelete() 
     {
         if ($this->depth == 0) {
@@ -194,10 +145,13 @@ class Category extends \yii\db\ActiveRecord
         return $this->updateAll($attributes, ['id' => $childrenIds]);
     }
 
+    /**
+     * @return ActiveQuery
+     */
     public function getCategoryToItems()
     {
         $relation = Module::getModel($this, 'CategoryToItem');
-        return self::hasMany($relation::className(), ['category_id' => 'id']);
+        return static::hasMany($relation::className(), ['category_id' => 'id']);
     }
 
     /**
@@ -206,7 +160,7 @@ class Category extends \yii\db\ActiveRecord
     public function getItems()
     {
         $relation = Module::getModel($this, 'Item');
-        return self::hasMany($relation::className(), ['id' => 'item_id'])
+        return static::hasMany($relation::className(), ['id' => 'item_id'])
             ->via('categoryToItems');
     }
 

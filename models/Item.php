@@ -7,10 +7,13 @@
 
 namespace bariew\postModule\models;
 
+use bariew\postModule\Module;
+use bariew\yii2Tools\behaviors\RelationViaBehavior;
+use bariew\yii2Tools\validators\ListValidator;
 use Yii;
+use yii\base\DynamicModel;
 use \yii\db\ActiveRecord;
 use \bariew\yii2Tools\behaviors\FileBehavior;
-use bariew\postModule\components\CategoryToItemBehavior;
 use yii\db\ActiveQuery;
 
 /**
@@ -19,7 +22,7 @@ use yii\db\ActiveQuery;
  * Usage:
  * @author Pavel Bariev <bariew@yandex.ru>
  * @property integer $id
- * @property integer $user_id
+ * @property integer $owner_id
  * @property string $title
  * @property string $brief
  * @property string $content
@@ -28,25 +31,17 @@ use yii\db\ActiveQuery;
  * @property integer $updated_at
  * @property string $image
  *
- * @method FileBehavior getRemoveLink
- * @method FileBehavior getFileLink
- * @method FileBehavior getFilePositionLink
- * @method FileBehavior linkList
- * @method FileBehavior deleteFile
- * @method FileBehavior renameFile
+ * @mixin FileBehavior
  *
  */
 class Item extends ActiveRecord
 {
-    const SCENARIO_ADMIN = 'admin';
-    const SCENARIO_USER = 'user';
-
     /**
      * @inheritdoc
      */
     public static function tableName()
     {
-        return 'post_item';
+        return '{{%'.Module::getName(static::className()).'_item}}';
     }
 
     /**
@@ -60,9 +55,9 @@ class Item extends ActiveRecord
             [['brief', 'content'], 'string'],
             [['title'], 'string', 'max' => 255],
             ['image', 'image', 'maxFiles' => 10],
-            [['categoryIds'], 'safe', 'on' => [self::SCENARIO_ADMIN, self::SCENARIO_USER]],
-            ['user_id', 'required', 'on' => self::SCENARIO_ADMIN],
-            ['user_id', 'integer', 'on' => self::SCENARIO_ADMIN],
+            ['categories', ListValidator::className(),
+                'model' => $this,
+                'when' => function($model){ return $model instanceof DynamicModel;}],
         ];
     }
 
@@ -83,30 +78,41 @@ class Item extends ActiveRecord
                     'thumb3' => ['method' => 'thumbnail', 'width' => 200, 'height' => 200],
                 ]
             ],
-            'categoryToItem' => [
-                'class' => CategoryToItemBehavior::className()
+            [
+                'class' => RelationViaBehavior::className(),
+                'relations' => ['categories']
             ]
         ];
     }
 
     /**
-     * @inheritdoc
+     * @return ActiveQuery
      */
-    public function init()
+    public function getCategoryToItems()
     {
-        parent::init();
-        switch ($this->scenario) {
-            case self::SCENARIO_USER :
-                $this->user_id = Yii::$app->user->id;
-                break;
-            case self::SCENARIO_DEFAULT:
-                $this->is_active = 1;
-                break;
-        }
+        return static::hasMany(Module::getClass(static::className(), 'CategoryToItem'), ['item_id' => 'id']);
     }
 
     /**
-     * Gets search query according to model scenario.
+     * @return ActiveQuery
+     */
+    public function getCategories()
+    {
+        return static::hasMany(Module::getClass(static::className(), 'Category'), ['id' => 'category_id'])
+            ->via('categoryToItems');
+    }
+
+    /**
+     * @return array
+     */
+    public static function categoriesList()
+    {
+        $class = Module::getClass(static::className(), 'Category');
+        return $class::find()->indexBy('id')->select('name')->column();
+    }
+
+    /**
+     * Gets search query.
      * @param array $params search params key=>value
      * @return ActiveQuery
      */
@@ -122,7 +128,7 @@ class Item extends ActiveRecord
     {
         return [
             'id' => Yii::t('modules/post', 'ID'),
-            'user_id' => Yii::t('modules/post', 'User ID'),
+            'owner_id' => Yii::t('modules/post', 'Owner ID'),
             'title' => Yii::t('modules/post', 'Title'),
             'brief' => Yii::t('modules/post', 'Brief'),
             'content' => Yii::t('modules/post', 'Content'),
@@ -161,8 +167,8 @@ class Item extends ActiveRecord
     public function getStoragePath()
     {
         $moduleName = \bariew\postModule\Module::moduleName($this);
-        $user_id = $this->getAttribute('user_id') ? : Yii::$app->user->id;
-        return "@app/web/files/{$user_id}/{$moduleName}/"
+        $owner_id = $this->getAttribute('owner_id') ? : Yii::$app->user->id;
+        return "@app/web/files/{$owner_id}/{$moduleName}/"
             . $this->formName() . '/' . $this->id; 
     }
 }

@@ -35,15 +35,6 @@ class ItemController extends Controller
     public $modelName = 'Item';
 
     /**
-     * Gets scenario for model.
-     * @return string
-     */
-    public function getScenario()
-    {
-        return Item::SCENARIO_ADMIN;
-    }
-
-    /**
      * Gets path to model uploaded files.
      * @return string path to model uploaded files.
      * @throws NotFoundHttpException
@@ -134,15 +125,13 @@ class ItemController extends Controller
     public function findModel($id = false, $search = false)
     {
         $model = Module::getModel(
-            $this,
+            static::className(),
             ($search ? $this->searchModelName : $this->modelName),
-            ['controllers' => 'models'],
-            ['scenario' => $this->getScenario()]
+            ['controllers' => 'models']
         );
         if ($id && (!$model = $model->search(compact('id'))->one())) {
             throw new NotFoundHttpException('The requested page does not exist.');
         }
-        $model->scenario = $this->getScenario(); // for found model too
         return $model;
     }
 }
