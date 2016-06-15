@@ -22,11 +22,6 @@ use yii\db\ActiveQuery;
  */
 class CategorySearch extends Category
 {
-    public static function tableName()
-    {
-        return Module::getModel(static::className(), 'Category')->tableName();
-    }
-
     /**
      * @inheritdoc
      */

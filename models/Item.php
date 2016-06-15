@@ -145,14 +145,14 @@ class Item extends ActiveRecord
      */
     public static function active()
     {
-        return self::find()->andWhere(['is_active' => 1]);
+        return static::find()->andWhere(['is_active' => 1]);
     }
 
     /**
      * is_active field available values.
      * @return array
      */
-    public static function activeList()
+    public static function isActiveList()
     {
         return [
             0 => Yii::t('modules/post', 'No'),

@@ -26,15 +26,13 @@ class m150326_144251_category_create extends Migration
             'category_id' => Schema::TYPE_INTEGER,
             'item_id' => Schema::TYPE_INTEGER
         ]);
-        MigrationHelper::addForeignKey(CategoryToItem::tableName(), 'category_id', Category::tableName(), 'id');
-        MigrationHelper::addForeignKey(CategoryToItem::tableName(), 'item_id', Item::tableName(), 'id');
-        return true;
+        MigrationHelper::addForeignKey(CategoryToItem::tableName(), 'category_id', Category::tableName(), 'id', 'CASCADE', 'CASCADE');
+        MigrationHelper::addForeignKey(CategoryToItem::tableName(), 'item_id', Item::tableName(), 'id', 'CASCADE', 'CASCADE');
     }
 
     public function down()
     {
         $this->dropTable(CategoryToItem::tableName());
         $this->dropTable(Category::tableName());
-        return true;
     }
 }

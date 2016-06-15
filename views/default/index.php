@@ -13,20 +13,13 @@ $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="item-index">
 
-    <h1><?= Html::encode($this->title) ?>
-        <?= Html::a(
-            Yii::t('modules/post', 'Create Item'),
-            ['create'],
-            ['class' => 'btn btn-success pull-right']
-        ) ?>
-    </h1>
+    <h1><?= Html::encode($this->title) ?></h1>
 
     <?= GridView::widget([
         'dataProvider' => $dataProvider,
         'filterModel' => $searchModel,
         'columns' => [
             'title',
-            \bariew\yii2Tools\helpers\GridHelper::listFormat($searchModel, 'is_active'),
             \bariew\yii2Tools\helpers\GridHelper::dateFormat($searchModel, 'created_at'),
             ['class' => 'yii\grid\ActionColumn'],
         ],

@@ -18,14 +18,7 @@ $this->params['breadcrumbs'][] = $this->title;
         'columns' => [
             'title',
             'name',
-            [
-                'attribute' => 'is_active',
-                'format' => 'boolean',
-                'filter' => Html::activeDropDownList($searchModel, 'is_active', $searchModel::activeList(), [
-                    'class' => 'form-control',
-                    'prompt' => ''
-                ])
-            ],
+            \bariew\yii2Tools\helpers\GridHelper::listFormat($searchModel, 'is_active'),
             ['class' => 'yii\grid\ActionColumn'],
         ],
     ]); ?>

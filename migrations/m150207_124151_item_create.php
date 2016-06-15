@@ -8,7 +8,7 @@ class m150207_124151_item_create extends Migration
 {
     public function up()
     {
-        return $this->createTable(Item::tableName(), [
+        $this->createTable(Item::tableName(), [
             'id' => Schema::TYPE_PK,
             'owner_id' => Schema::TYPE_INTEGER,
             'title' => Schema::TYPE_STRING,
@@ -23,6 +23,6 @@ class m150207_124151_item_create extends Migration
 
     public function down()
     {
-        return $this->dropTable(Item::tableName());
+        $this->dropTable(Item::tableName());
     }
 }

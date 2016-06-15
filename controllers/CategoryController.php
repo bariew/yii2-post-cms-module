@@ -2,15 +2,13 @@
 
 namespace bariew\postModule\controllers;
 
+use bariew\nodeTree\ARTreeMenuWidget;
 use bariew\postModule\actions\TreeCreateAction;
 use bariew\postModule\actions\TreeDeleteAction;
 use bariew\postModule\actions\TreeMoveAction;
 use bariew\postModule\actions\TreeUpdateAction;
 use bariew\postModule\Module;
 use Yii;
-use bariew\postModule\models\Category;
-use bariew\postModule\models\SearchCategory;
-use yii\web\NotFoundHttpException;
 
 /**
  * CategoryController implements the CRUD actions for Category model.
@@ -29,5 +27,32 @@ class CategoryController extends ItemController
             'tree-move' => TreeMoveAction::className(),
             'tree-update' => TreeUpdateAction::className(),
         ]);
+    }
+
+    public function getMenu()
+    {
+        $moduleName = Module::moduleName($this);
+        $model = $this->findModel();
+        $uniqueKey = 0;
+        $items = $model::find()->orderBy(['lft' => SORT_ASC])->asArray()->all();;
+        foreach ($items as &$item) {
+            $uniqueKey++;
+            $nodeId = $uniqueKey . '-id-' . $item['id'];
+            $item['nodeAttributes'] = [
+                'id'    => $nodeId,
+                'text'  => $item['name'],
+                'type'  => 'folder',
+                'active'=> \Yii::$app->request->get('id') == $item['id'],
+                'a_attr'=> [
+                    'data-id' => $nodeId,
+                    'href'    => ["/{$moduleName}/category/update", 'id' => $item['id']]
+                ]
+            ];
+        }
+        $treeWidget = new ARTreeMenuWidget([
+            'items' => $items,
+            'view' => 'nested'
+        ]);
+        return $treeWidget->run();
     }
 }

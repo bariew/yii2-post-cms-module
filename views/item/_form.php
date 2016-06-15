@@ -5,7 +5,7 @@ use yii\widgets\ActiveForm;
 use yii\helpers\Url;
 use kartik\select2\Select2;
 /* @var $this yii\web\View */
-/* @var $model app\modules\product\models\Item */
+/* @var $model bariew\postModule\models\Item */
 /* @var $form yii\widgets\ActiveForm */
 ?>
 
@@ -14,7 +14,7 @@ use kartik\select2\Select2;
     <?php $form = ActiveForm::begin(['options' => ['enctype' => 'multipart/form-data']]); ?>
 
     <?= $form->field($model, 'image[]')->fileInput(['multiple' => true]) ?>
-    <?= \app\modules\product\widgets\ImageGallery::widget(['model' => $model, 'field' => 'thumb1']); ?>
+    <?= \bariew\postModule\widgets\ImageGallery::widget(['model' => $model, 'field' => 'thumb1']); ?>
     <?= $form->field($model, 'title')->textInput(['maxlength' => 255]) ?>
     <?= $form->field($model, 'categories')->widget(Select2::className(), [
         'data' => $model->categoriesList(),

@@ -57,7 +57,7 @@ class Category extends \yii\db\ActiveRecord
      */
     public function search($params = [])
     {
-        return self::find()->andFilterWhere(array_merge($this->attributes, $params));
+        return static::find()->andFilterWhere(array_merge($this->attributes, $params));
     }
 
     /**
@@ -102,7 +102,7 @@ class Category extends \yii\db\ActiveRecord
      * is_active available value list.
      * @return array
      */
-    public static function activeList()
+    public static function isActiveList()
     {
         return [
             0 => Yii::t('modules/post', 'No'),
@@ -123,7 +123,7 @@ class Category extends \yii\db\ActiveRecord
      */
     public static function active()
     {
-        return self::find()->andWhere(['is_active'=>1]);
+        return static::find()->andWhere(['is_active'=>1]);
     }
 
     /**
@@ -173,7 +173,7 @@ class Category extends \yii\db\ActiveRecord
                 $exclude[] = $item;
                 continue;
             }
-            if (self::isChildOfArray($exclude, $item)) {
+            if (static::isChildOfArray($exclude, $item)) {
                 continue;
             }
             $result[$k] = $item;
@@ -199,7 +199,7 @@ class Category extends \yii\db\ActiveRecord
                 continue;
             }
             $parent = end($parents[$item['depth']-1]);
-            if (!self::isChildOfArray([$parent], $item)) {
+            if (!static::isChildOfArray([$parent], $item)) {
                 continue;
             }
             $key = key($parents[$item['depth']-1]);

@@ -15,12 +15,10 @@ class m150327_064902_category_root extends Migration
     {
         $root = new Category($this->item);
         $root->makeRoot();
-        return true;
     }
 
     public function down()
     {
         $this->delete(Category::tableName(), $this->item);
-        return true;
     }
 }
