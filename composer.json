@@ -11,6 +11,7 @@
         }
     ],
     "require" : {
+        "bariew/yii2-abstract-module":"*",
         "bariew/yii2-imperavi-redactor": "dev-master",
         "bariew/yii2-tools": "dev-master",
         "bariew/yii2-node-tree" : "2.0.*",

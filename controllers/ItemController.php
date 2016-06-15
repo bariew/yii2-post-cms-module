@@ -7,16 +7,13 @@
 
 namespace bariew\postModule\controllers;
 
+use bariew\abstractModule\controllers\AbstractModelController;
 use bariew\postModule\actions\CreateAction;
 use bariew\postModule\actions\DeleteAction;
 use bariew\postModule\actions\IndexAction;
 use bariew\postModule\actions\UpdateAction;
 use bariew\postModule\actions\ViewAction;
-use bariew\postModule\Module;
 use Yii;
-use bariew\postModule\models\Item;
-use bariew\postModule\models\ItemSearch;
-use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 
@@ -25,14 +22,12 @@ use yii\filters\VerbFilter;
  *
  * @author Pavel Bariev <bariew@yandex.ru>
  */
-class ItemController extends Controller
+class ItemController extends AbstractModelController
 {
     /**
      * @var string model uploaded files storage path.
      */
     protected $_storagePath;
-    public $searchModelName = 'ItemSearch';
-    public $modelName = 'Item';
 
     /**
      * Gets path to model uploaded files.
@@ -112,26 +107,5 @@ class ItemController extends Controller
                 'class' => \bariew\yii2Tools\actions\FileRenameAction::className()
             ]
         ];
-    }
-
-    /**
-     * Finds the Item model based on its primary key value.
-     * If the model is not found, a 404 HTTP exception will be thrown.
-     * @param integer|boolean $id
-     * @param boolean $search
-     * @return Item|ItemSearch the loaded model
-     * @throws NotFoundHttpException if the model cannot be found
-     */
-    public function findModel($id = false, $search = false)
-    {
-        $model = Module::getModel(
-            static::className(),
-            ($search ? $this->searchModelName : $this->modelName),
-            ['controllers' => 'models']
-        );
-        if ($id && (!$model = $model->search(compact('id'))->one())) {
-            throw new NotFoundHttpException('The requested page does not exist.');
-        }
-        return $model;
     }
 }

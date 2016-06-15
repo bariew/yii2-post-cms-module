@@ -7,9 +7,7 @@
 
 namespace bariew\postModule\models;
 
-use bariew\postModule\Module;
 use Yii;
-use yii\base\Model;
 use yii\data\ActiveDataProvider;
 use yii\db\ActiveQuery;
 
@@ -43,11 +41,11 @@ class CategorySearch extends Category
      */
     public function search($params = [])
     {
-        $model = Module::getModel($this, 'Category');
         /**
          * @var ActiveQuery $query
          */
-        $query = $model->search();
+        $class = static::parentClass();
+        $query = (new $class())->search();
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
         ]);

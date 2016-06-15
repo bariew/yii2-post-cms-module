@@ -7,6 +7,7 @@
 
 namespace bariew\postModule\models;
 
+use bariew\abstractModule\models\AbstractModel;
 use bariew\postModule\Module;
 use bariew\yii2Tools\behaviors\RelationViaBehavior;
 use bariew\yii2Tools\validators\ListValidator;
@@ -34,16 +35,8 @@ use yii\db\ActiveQuery;
  * @mixin FileBehavior
  *
  */
-class Item extends ActiveRecord
+class Item extends AbstractModel
 {
-    /**
-     * @inheritdoc
-     */
-    public static function tableName()
-    {
-        return '{{%'.Module::getName(static::className()).'_item}}';
-    }
-
     /**
      * @inheritdoc
      */
@@ -90,7 +83,7 @@ class Item extends ActiveRecord
      */
     public function getCategoryToItems()
     {
-        return static::hasMany(Module::getClass(static::className(), 'CategoryToItem'), ['item_id' => 'id']);
+        return static::hasMany(CategoryToItem::childClass(), ['item_id' => 'id']);
     }
 
     /**
@@ -98,16 +91,16 @@ class Item extends ActiveRecord
      */
     public function getCategories()
     {
-        return static::hasMany(Module::getClass(static::className(), 'Category'), ['id' => 'category_id'])
+        return static::hasMany(Category::childClass(), ['id' => 'category_id'])
             ->via('categoryToItems');
     }
 
     /**
      * @return array
      */
-    public static function categoriesList()
+    public function categoriesList()
     {
-        $class = Module::getClass(static::className(), 'Category');
+        $class = Category::childClass();
         return $class::find()->indexBy('id')->select('name')->column();
     }
 
@@ -118,7 +111,7 @@ class Item extends ActiveRecord
      */
     public function search($params = [])
     {
-        return $this::find()->andFilterWhere(array_merge($this->attributes, $params));
+        return self::find()->andFilterWhere(array_merge($this->attributes, $params));
     }
 
     /**
@@ -166,7 +159,7 @@ class Item extends ActiveRecord
      */
     public function getStoragePath()
     {
-        $moduleName = \bariew\postModule\Module::moduleName($this);
+        $moduleName = AbstractModel::moduleName(static::className());
         $owner_id = $this->getAttribute('owner_id') ? : Yii::$app->user->id;
         return "@app/web/files/{$owner_id}/{$moduleName}/"
             . $this->formName() . '/' . $this->id; 

@@ -23,11 +23,6 @@ class ItemSearch extends Item
 {
     public $category_id;
 
-    public static function tableName()
-    {
-        return Module::getModel(static::className(), 'Item')->tableName();
-    }
-
     /**
      * @inheritdoc
      */
@@ -49,12 +44,11 @@ class ItemSearch extends Item
      */
     public function search($params = [])
     {
-        /** @var Item $model */
-        $model = Module::getModel($this, 'Item');
         /**
          * @var ActiveQuery $query
          */
-        $query = $model->search();
+        $class = static::parentClass();
+        $query = (new $class())->find();
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
             'sort' => [
@@ -82,9 +76,8 @@ class ItemSearch extends Item
             ;
         if ($this->category_id) {
             $t = $this->tableName();
-            $relation = \bariew\postModule\Module::getModel($this, 'CategoryToItem')->tableName();
-            $query->innerJoin($relation, "$relation.item_id = $t.id")
-                ->andWhere(["$relation.category_id" => $this->category_id]);
+            $query->joinWith("categoryToItems", true, "RIGHT JOIN")
+                ->groupBy("$t.id");
         }
 
         return $dataProvider;

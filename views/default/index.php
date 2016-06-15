@@ -19,9 +19,8 @@ $this->params['breadcrumbs'][] = $this->title;
         'dataProvider' => $dataProvider,
         'filterModel' => $searchModel,
         'columns' => [
-            'title',
+            \bariew\yii2Tools\helpers\GridHelper::linkFormat($searchModel, 'title'),
             \bariew\yii2Tools\helpers\GridHelper::dateFormat($searchModel, 'created_at'),
-            ['class' => 'yii\grid\ActionColumn'],
         ],
     ]); ?>
 

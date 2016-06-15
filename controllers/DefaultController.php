@@ -19,7 +19,7 @@ use bariew\postModule\models\Item;
  */
 class DefaultController extends ItemController
 {
-
+    public $modelName = 'Item';
     public function actions()
     {
         return [

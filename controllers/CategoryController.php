@@ -2,6 +2,7 @@
 
 namespace bariew\postModule\controllers;
 
+use bariew\abstractModule\models\AbstractModel;
 use bariew\nodeTree\ARTreeMenuWidget;
 use bariew\postModule\actions\TreeCreateAction;
 use bariew\postModule\actions\TreeDeleteAction;
@@ -16,8 +17,6 @@ use Yii;
 class CategoryController extends ItemController
 {
     public $layout = 'menu';
-    public $searchModelName = 'CategorySearch';
-    public $modelName = 'Category';
 
     public function actions()
     {
@@ -31,7 +30,7 @@ class CategoryController extends ItemController
 
     public function getMenu()
     {
-        $moduleName = Module::moduleName($this);
+        $moduleName = AbstractModel::moduleName(static::className());
         $model = $this->findModel();
         $uniqueKey = 0;
         $items = $model::find()->orderBy(['lft' => SORT_ASC])->asArray()->all();;

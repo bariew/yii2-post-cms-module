@@ -33,7 +33,7 @@ use yii\helpers\Url;
 
     <?= $form->field($model, 'is_active')->checkbox() ?>
 
-    <div class="form-group pull-right">
+    <div class="form-group">
         <?= Html::submitButton($model->isNewRecord ? Yii::t('modules/post', 'Create') : Yii::t('modules/post', 'Update'), ['class' => $model->isNewRecord ? 'btn btn-success' : 'btn btn-primary']) ?>
     </div>
 

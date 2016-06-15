@@ -2,6 +2,7 @@
 
 namespace bariew\postModule\models;
 
+use bariew\abstractModule\models\AbstractModel;
 use bariew\postModule\components\NestedQuery;
 use bariew\postModule\Module;
 use bariew\yii2Tools\behaviors\FileBehavior;
@@ -26,17 +27,9 @@ use yii\db\ActiveQuery;
  * @mixin NestedSetsBehavior
  * @mixin FileBehavior
  */
-class Category extends \yii\db\ActiveRecord
+class Category extends AbstractModel
 {
     public $items = [];
-
-    /**
-     * @inheritdoc
-     */
-    public static function tableName()
-    {
-        return '{{%'.Module::getName(static::className()).'_category}}';
-    }
 
     /**
      * @inheritdoc
@@ -49,15 +42,6 @@ class Category extends \yii\db\ActiveRecord
             [['title', 'name'], 'string', 'max' => 255],
             ['image', 'image', 'maxFiles' => 10],
         ];
-    }
-
-    /**
-     * @param array $params
-     * @return NestedQuery
-     */
-    public function search($params = [])
-    {
-        return static::find()->andFilterWhere(array_merge($this->attributes, $params));
     }
 
     /**
@@ -150,8 +134,7 @@ class Category extends \yii\db\ActiveRecord
      */
     public function getCategoryToItems()
     {
-        $relation = Module::getModel($this, 'CategoryToItem');
-        return static::hasMany($relation::className(), ['category_id' => 'id']);
+        return static::hasMany(CategoryToItem::childClass(), ['category_id' => 'id']);
     }
 
     /**
@@ -159,8 +142,7 @@ class Category extends \yii\db\ActiveRecord
      */
     public function getItems()
     {
-        $relation = Module::getModel($this, 'Item');
-        return static::hasMany($relation::className(), ['id' => 'item_id'])
+        return static::hasMany(Item::childClass(), ['id' => 'item_id'])
             ->via('categoryToItems');
     }
 
@@ -226,7 +208,7 @@ class Category extends \yii\db\ActiveRecord
      */
     public function getStoragePath()
     {
-        $moduleName = \bariew\postModule\Module::moduleName($this);
+        $moduleName = AbstractModel::moduleName(static::className());
         return "@app/web/files/{$moduleName}/"
             . $this->formName() . '/' . $this->id;
     }
